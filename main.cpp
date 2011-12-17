@@ -6,16 +6,19 @@
 #include "screen_ruler.h"
 
 
+ScreenRuler* SCREEN_RULER;
+
+
 using namespace std;
 
 int main(int argc, char *argv[])
 {
 Gtk::Main kit( argc, argv );
 
-ScreenRuler ruler;
+SCREEN_RULER = new ScreenRuler;
 
 
-Gtk::Main::run( ruler );
+Gtk::Main::run( *SCREEN_RULER );
 
 return EXIT_SUCCESS;
 }

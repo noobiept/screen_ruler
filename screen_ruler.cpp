@@ -12,7 +12,7 @@ ScreenRuler::ScreenRuler()
 createMenu( this );
 
 
-add( drawing );
+add( draw );
 
 
     // :: Window :: //
@@ -36,12 +36,9 @@ show_all_children();
 add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK );
 
 signal_button_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::buttonPressEvents ) );
-
-
-    // :: Options events :: //
-
-options.signal_onAlwaysAboveChange().connect( sigc::mem_fun( *this, &ScreenRuler::alwaysAboveEvents ) );
 }
+
+
 
 
 
@@ -68,8 +65,8 @@ m_refActionGroup->add(Gtk::Action::create("Options", "Options"),
           sigc::mem_fun(options, &Options::open));
 
 
-  m_refActionGroup->add(Gtk::Action::create("About", "About"),
-          sigc::mem_fun(*ruler, &ScreenRuler::on_menu_file_popup_generic));
+  m_refActionGroup->add( Gtk::Action::create("About", "About"),
+          sigc::mem_fun( about, &About::open ) );
 
 
 
@@ -234,13 +231,4 @@ return true;
 void ScreenRuler::on_menu_file_popup_generic()
 {
    std::cout << "A popup menu item was selected." << std::endl;
-}
-
-
-
-    // :::: Options Events :::: //
-
-void ScreenRuler::alwaysAboveEvents( int value )
-{
-set_keep_above( value );
 }

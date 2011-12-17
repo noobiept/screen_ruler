@@ -3,9 +3,10 @@
 
 
 #include <gtkmm.h>
+#include "secondary_window.h"
+#include "my_spin_button.h"
 
-
-class Options : public Gtk::Window
+class Options : public SecondaryWindow
 {
     public:
 
@@ -13,19 +14,7 @@ class Options : public Gtk::Window
         Options();
 
 
-            // open the options window
-
-        void open();
-
-
-
-        sigc::signal<void, int> signal_onAlwaysAboveChange();
-
     private:
-
-
-        sigc::signal<void, int> the_signal_onAlwaysAboveChange;
-
 
             // :: Event functions :: //
 
@@ -39,13 +28,14 @@ class Options : public Gtk::Window
             Gtk::Box firstLine_ui;
 
                 Gtk::Label angleLabel_ui;
-                Gtk::SpinButton angle_ui;
+                MySpinButton angle_ui;
                 Gtk::CheckButton alwaysAbove_ui;
 
             Gtk::Box secondLine_ui;
 
                 Gtk::RadioButton pixels_ui;
                 Gtk::RadioButton centimeters_ui;
+                Gtk::RadioButton inches_ui;
 
 };
 

@@ -7,6 +7,7 @@
 
 #include "draw.h"
 #include "options.h"
+#include "about.h"
 
 class ScreenRuler : public Gtk::Window
 {
@@ -27,12 +28,10 @@ class ScreenRuler : public Gtk::Window
         virtual bool on_leave_notify_event(GdkEventMotion* event);
 
 
-        Draw drawing;
+        Draw draw;
         Options options;
+        About about;
 
-            // :: Options events functions :: //
-
-        void alwaysAboveEvents( int value );
 
 
             // :: Popup menu :: //
