@@ -16,6 +16,9 @@ class ScreenRuler : public Gtk::Window
         ScreenRuler();
 
 
+        std::string getOrientation() const;
+
+
     private:
 
         friend class Options;

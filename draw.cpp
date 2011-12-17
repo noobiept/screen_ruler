@@ -1,6 +1,10 @@
 #include "draw.h"
 #include "main.h"
 
+#include "screen_ruler.h"
+
+extern ScreenRuler* SCREEN_RULER;
+
 
 Draw::Draw()
 
@@ -38,24 +42,54 @@ cr->begin_new_path();
 cr->set_line_width(1);
 cr->set_source_rgba(0, 0, 0, 1);
 
-double small = height / 6.0;
-double medium = height / 4;
-double large = height / 3;
+
+    // ----
+
+
+bool leftOrientation = true;
+
+
+    // the length of the traces (lines)
+double small;
+double medium;
+double large;
+
+if (SCREEN_RULER->getOrientation() == "left")
+    {
+    leftOrientation = true;
+
+    small = height / 6.0;
+    medium = height / 4;
+    large = height / 3;
+    }
+
+    //'up'
+else
+    {
+    leftOrientation = false;
+
+    small = width / 6.0;
+    medium = width / 4;
+    large = width / 3;
+    }
+
+
+
+
+
+
 
 
 
     // :: draw the lines on top :: //
 
-double lineHeight = small;
+double lineLength = small;
 
 for (int i = 0 ; i < width ; i += step_var)
     {
-
-
-
     if (((i % 100) * step_var) == 0)
         {
-        lineHeight = large;
+        lineLength = large;
 
 
             // draw the text
@@ -81,16 +115,16 @@ for (int i = 0 ; i < width ; i += step_var)
 
     else if (((i % 50) * step_var) == 0)
         {
-        lineHeight = medium;
+        lineLength = medium;
         }
 
     else
         {
-        lineHeight = small;
+        lineLength = small;
         }
 
     cr->move_to(i, 0);
-    cr->line_to(i, lineHeight);
+    cr->line_to(i, lineLength);
     }
 
 cr->stroke();
@@ -115,27 +149,63 @@ double pxToMm = 1.0 * screen->get_width() / screen->get_width_mm();
 double pxToCm = pxToMm / 10;
     // :: draw in centimeters :: //
 
-lineHeight = small;
 
-for (int i = 0 ; i < width / pxToCm ; i += step_var )
+
+
+
+int limit;
+
+
+
+lineLength = small;
+
+
+
+
+if (leftOrientation == true)
+    {
+    limit = width / pxToCm;
+    leftOrientation = true;
+    }
+
+    //'up'
+else
+    {
+    limit = height / pxToCm;
+    leftOrientation = false;
+    }
+
+
+for (int i = 0 ; i < limit ; i += step_var )
     {
     if (((i % 100) * step_var) == 0)
         {
-        lineHeight = large;
+        lineLength = large;
         }
 
     else if (((i % 50) * step_var) == 0)
         {
-        lineHeight = medium;
+        lineLength = medium;
         }
 
     else
         {
-        lineHeight = small;
+        lineLength = small;
         }
 
-    cr->move_to(i * pxToCm, height);
-    cr->line_to(i * pxToCm, height - lineHeight);
+    //HERE
+    if (leftOrientation == true)
+        {
+        cr->move_to(i * pxToCm, height);
+        cr->line_to(i * pxToCm, height - lineLength);
+        }
+
+    else
+        {
+        cr->move_to(width, i * pxToCm);
+        cr->line_to(width - lineLength, i * pxToCm);
+        }
+
     }
 
 cr->stroke();
@@ -144,27 +214,27 @@ cr->stroke();
 
     // :: draw the lines on bottm :: //
 /*
-lineHeight = small;
+lineLength = small;
 
 for (int i = 0 ; i < width ; i += step_var)
     {
     if (((i % 100) * step_var) == 0)
         {
-        lineHeight = large;
+        lineLength = large;
         }
 
     else if (((i % 50) * step_var) == 0)
         {
-        lineHeight = medium;
+        lineLength = medium;
         }
 
     else
         {
-        lineHeight = small;
+        lineLength = small;
         }
 
     cr->move_to(i, height);
-    cr->line_to(i, height - lineHeight);
+    cr->line_to(i, height - lineLength);
     }
 
 cr->stroke();

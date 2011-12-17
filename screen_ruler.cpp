@@ -121,59 +121,43 @@ get_position( win_pos_beg_x, win_pos_beg_y );
     //right click -> open the popup menu
 if (event->type == GDK_BUTTON_PRESS && event->button == 3)
     {
-        if(m_pMenuPopup)
-      m_pMenuPopup->popup(event->button, event->time);
+    if(m_pMenuPopup)
+        {
+        m_pMenuPopup->popup(event->button, event->time);
+        }
+
     }
 
 
     //on middle click, rotate the ruler
 else if (event->type == GDK_BUTTON_PRESS && event->button == 2)
     {
-cout << "middle click " << endl;
+    Glib::RefPtr<Gdk::Window> window = get_window();
 
-
-    Glib::RefPtr<Gdk::Window> window = Glib::wrap(event->window);
- //   Glib::RefPtr<Gdk::Window> window = event->window;
-    Glib::RefPtr<Gdk::Window> window2 = get_window();
-
-    if (window) //HERE
+    if (!window)
         {
-            cout << "no window" << endl;
+        cout << "no window" << endl;
 
-            if (window2)
-                {
-                    cout << "no window2 too" << endl;
-                }
-            return true;
+        return true;
         }
+
 
     int width = window->get_width();
     int height = window->get_height();
 
-cout<<orientation_var<<endl;
+
+    window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
+
 
     if (orientation_var == "left")
         {
         orientation_var = "up";
-
-cout << "to up" << endl;
-
-                //HERE check se recebeu.. se n eh null
-        window->move_resize(width, height, height, width);
-
         }
 
     else
         {
         orientation_var = "left";
-cout << "to left" << endl;
-
-                //HERE check se recebeu.. se n eh null
-        window->move_resize(width, height, height, width);
         }
-
-
-
     }
 
 
@@ -231,4 +215,11 @@ return true;
 void ScreenRuler::on_menu_file_popup_generic()
 {
    std::cout << "A popup menu item was selected." << std::endl;
+}
+
+
+
+std::string ScreenRuler::getOrientation() const
+{
+return orientation_var;
 }

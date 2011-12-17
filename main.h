@@ -8,7 +8,7 @@
 
         gravar as opcoes
 
-        rotate n esta a funcionar
+        rotate n esta certo ainda ..
 
         atalho de teclado para as options
 
