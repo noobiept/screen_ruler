@@ -12,7 +12,8 @@ Draw::Draw()
 
       smallHeight_var( 0 ),     //HERE k valor para aqui
       mediumHeight_var( 0 ),
-      largeHeight_var( 0 )
+      largeHeight_var( 0 ),
+      hasHorizontalOrientation_var( true )
 
 {
 
@@ -25,21 +26,16 @@ bool Draw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
 Gtk::Allocation allocation = get_allocation();
 
-const int width = allocation.get_width();
-const int height = allocation.get_height();
+width_var = allocation.get_width();
+height_var = allocation.get_height();
 
 
     // :: The background color :: //
 
 cr->set_source_rgba(0.87, 0.83, 0.13, 0.5);
-cr->rectangle(0, 0, width, height);
+cr->rectangle(0, 0, width_var, height_var);
 cr->fill();
 
-
-    // ::  Determine the orientation :: //
-
-
-bool leftOrientation = true;    //HERE hasLeftOrientation
 
 
 
@@ -92,21 +88,27 @@ int rulerLength;
     //the limit of the traces, from where we calculate the small/medium/large lengths
 int traceLengthLimit;
 
+
+
+
+    // ::  Determine the orientation :: //
+
+
 if (SCREEN_RULER->getOrientation() == "left")
     {
-    leftOrientation = true;
+    hasHorizontalOrientation_var = true;
 
-    rulerLength = width;
-    traceLengthLimit = height;
+    rulerLength = width_var;
+    traceLengthLimit = height_var;
     }
 
     //'up'
 else
     {
-    leftOrientation = false;
+    hasHorizontalOrientation_var = false;
 
-    rulerLength = height;
-    traceLengthLimit = width;
+    rulerLength = height_var;
+    traceLengthLimit = width_var;
     }
 
 
@@ -120,17 +122,25 @@ double large = traceLengthLimit / 3.0;
 
 int limit = rulerLength / proportion;
 
+
+
     // :: draw the lines on top (or right/left?...) :: //
 
 cr->begin_new_path();
 
 
-cr->set_line_width(1);
+cr->set_line_width(0.5);
 cr->set_source_rgba(0, 0, 0, 1);
 
 
 
 double lineLength = small;
+
+
+    //reset this variable
+showUnit_var = false;
+
+    // :: draw the top line :: //
 
 for (int i = 0 ; i < limit ; i += step_var)
     {
@@ -138,57 +148,7 @@ for (int i = 0 ; i < limit ; i += step_var)
         {
         lineLength = large;
 
-
-
-            // draw the text
-
-        std::stringstream stream;
-
-        stream << i << shortUnits;
-
-
-        //Glib::RefPtr<Pango::Layout> textDrawing = Gtk::Widget::create_pango_layout( stream.str() );
-Glib::RefPtr<Pango::Context> context = Gtk::Widget::create_pango_context();
-
-
-        if (leftOrientation == false)
-            {
-            //Glib::RefPtr< Pango::Context > context = textDrawing->get_context();
-
-            context->set_base_gravity( Pango::GRAVITY_EAST );
-
-            //double pi = 3.14;
-
-            //cr->rotate(pi / 2);
-            }
-
-
-Glib::RefPtr<Pango::Layout> textDrawing = Pango::Layout::create( context );
-
-
-textDrawing->set_text( stream.str() );
-
-        int textHeight = 10;
-        //textDrawing->set_height(textHeight);
-
-        int textWidth = 50;         //HERE hmmm
-        //textDrawing->set_width(textWidth);
-
-
-        if (leftOrientation == true)
-            {
-            cr->move_to( i - textWidth / 2, height / 2 - textHeight );
-            }
-
-        else
-            {
-            cr->move_to( width / 2 - textHeight, i - textWidth );
-            }
-
-
-
-
-        textDrawing->show_in_cairo_context(cr);
+        measureAsText( cr, i, units, shortUnits, proportion );
         }
 
     else if (((i % 50) * step_var) == 0)
@@ -202,7 +162,7 @@ textDrawing->set_text( stream.str() );
         }
 
 
-    if (leftOrientation == true)
+    if (hasHorizontalOrientation_var == true)
         {
         cr->move_to(i * proportion, 0);
         cr->line_to(i * proportion, lineLength);
@@ -213,6 +173,8 @@ textDrawing->set_text( stream.str() );
         cr->move_to(0, i * proportion);
         cr->line_to(lineLength, i * proportion);
         }
+
+    //cr->stroke();
     }
 
 cr->stroke();
@@ -246,7 +208,7 @@ for (int i = 0 ; i < limit ; i += step_var )
         }
 
     //HERE
-    if (leftOrientation == true)
+    if (hasHorizontalOrientation_var == true)
         {
         cr->move_to(i * proportion, traceLengthLimit);
         cr->line_to(i * proportion, traceLengthLimit - lineLength);
@@ -264,7 +226,7 @@ cr->stroke();
 
 
 
-if (leftOrientation == false)
+if (hasHorizontalOrientation_var == false)
     {
     //int pi = 3.14;
 
@@ -276,6 +238,97 @@ if (leftOrientation == false)
 
 return true;
 }
+
+
+/*
+        //HERE nao ter k passar tantos argumentos... por coisas na classe
+ */
+
+void Draw::measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion )
+{
+    // draw the text
+
+std::stringstream stream;
+
+if (units == "pixels")
+    {
+    if (showUnit_var == false)
+        {
+        showUnit_var = true;
+
+        stream << i;
+        }
+
+    else
+        {
+        showUnit_var = false;
+
+        stream << i << shortUnits;
+        }
+    }
+
+else
+    {
+    if (showUnit_var == false)
+        {
+        showUnit_var = true;
+
+        stream << i / 100;
+        }
+
+    else
+        {
+        showUnit_var = false;
+
+        stream << i / 100 << shortUnits;
+        }
+    }
+
+
+//Glib::RefPtr<Pango::Layout> textDrawing = Gtk::Widget::create_pango_layout( stream.str() );
+Glib::RefPtr<Pango::Context> context = Gtk::Widget::create_pango_context();
+
+
+if (hasHorizontalOrientation_var == false)
+    {
+    //Glib::RefPtr< Pango::Context > context = textDrawing->get_context();
+
+    context->set_base_gravity( Pango::GRAVITY_EAST );
+
+    //double pi = 3.14;
+
+    //cr->rotate(pi / 2);
+    }
+
+
+Glib::RefPtr<Pango::Layout> textDrawing = Pango::Layout::create( context );
+
+textDrawing->set_text( stream.str() );
+
+int textHeight, textWidth;
+
+    //get the text dimensions (it updates the variables above -- by reference)
+textDrawing->get_pixel_size(textWidth, textHeight);
+
+//cout << textWidth << " " << textHeight << endl;
+cout << "i " << i << " textWidth " << textWidth  << " x_position " << i - textWidth / 2 << endl;
+
+
+    //place the text in the center of the ruler, and also centered with the line mark
+if (hasHorizontalOrientation_var == true)
+    {
+    cr->move_to( i * proportion - textWidth / 2, height_var / 2 - textHeight / 2 );
+    }
+
+else
+    {
+    cr->move_to( width_var / 2 - textWidth / 2, i * proportion - textHeight / 2 );
+    }
+
+
+textDrawing->show_in_cairo_context(cr);
+}
+
 
 
 
