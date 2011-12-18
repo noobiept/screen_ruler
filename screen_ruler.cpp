@@ -5,8 +5,9 @@
 
 ScreenRuler::ScreenRuler()
 
-    : m_pMenuPopup(0),
-      orientation_var("left")
+    : m_pMenuPopup( 0 ),
+      orientation_var( "left" ),
+      units_var( "pixels" )
 
 {
 createMenu( this );
@@ -142,13 +143,6 @@ else if (event->type == GDK_BUTTON_PRESS && event->button == 2)
         }
 
 
-    int width = window->get_width();
-    int height = window->get_height();
-
-
-    window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
-
-
     if (orientation_var == "left")
         {
         orientation_var = "up";
@@ -158,6 +152,13 @@ else if (event->type == GDK_BUTTON_PRESS && event->button == 2)
         {
         orientation_var = "left";
         }
+
+
+    int width = window->get_width();
+    int height = window->get_height();
+
+
+    window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
     }
 
 
@@ -222,4 +223,17 @@ void ScreenRuler::on_menu_file_popup_generic()
 std::string ScreenRuler::getOrientation() const
 {
 return orientation_var;
+}
+
+
+
+std::string ScreenRuler::getUnits() const
+{
+return units_var;
+}
+
+
+void ScreenRuler::setUnits( std::string units )
+{
+units_var = units;
 }

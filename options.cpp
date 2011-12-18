@@ -1,6 +1,7 @@
 #include "options.h"
 
 #include "screen_ruler.h"
+#include "main.h"
 
 extern ScreenRuler* SCREEN_RULER;
 
@@ -98,6 +99,10 @@ show_all_children();
     // :: Events :: //
 
 alwaysAbove_ui.signal_toggled().connect( sigc::mem_fun( *this, &Options::alwaysAboveEvents ) );
+
+     pixels_ui.signal_clicked().connect( sigc::bind<std::string>( sigc::mem_fun( *this, &Options::onUnitsChange ), "pixels"      ) );
+centimeters_ui.signal_clicked().connect( sigc::bind<std::string>( sigc::mem_fun( *this, &Options::onUnitsChange ), "centimeters" ) );
+     inches_ui.signal_clicked().connect( sigc::bind<std::string>( sigc::mem_fun( *this, &Options::onUnitsChange ), "inches"      ) );
 }
 
 
@@ -111,4 +116,13 @@ void Options::alwaysAboveEvents()
 SCREEN_RULER->set_keep_above( alwaysAbove_ui.get_active() );
 }
 
+
+
+
+void Options::onUnitsChange(std::string unit)
+{
+SCREEN_RULER->setUnits( unit );
+
+SCREEN_RULER->draw.forceReDraw();
+}
 

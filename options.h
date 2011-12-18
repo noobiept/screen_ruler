@@ -20,6 +20,8 @@ class Options : public SecondaryWindow
 
         void alwaysAboveEvents();
 
+        void onUnitsChange(std::string unit);
+
 
             // :: Layout :: //
 

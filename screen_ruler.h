@@ -17,6 +17,12 @@ class ScreenRuler : public Gtk::Window
 
 
         std::string getOrientation() const;
+        std::string getUnits() const;
+
+        void setUnits( std::string unit );
+
+
+        Draw draw;
 
 
     private:
@@ -31,7 +37,7 @@ class ScreenRuler : public Gtk::Window
         virtual bool on_leave_notify_event(GdkEventMotion* event);
 
 
-        Draw draw;
+
         Options options;
         About about;
 
@@ -56,7 +62,10 @@ class ScreenRuler : public Gtk::Window
         int win_pos_beg_x, win_pos_beg_y;
 
 
+
         std::string orientation_var;
+        std::string units_var;
+
 };
 
 

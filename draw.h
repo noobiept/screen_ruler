@@ -13,6 +13,8 @@ class Draw : public Gtk::DrawingArea
         Draw();
 
 
+        void forceReDraw();
+
     private:
 
             //Override default signal handler:
