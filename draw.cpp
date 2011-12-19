@@ -107,6 +107,9 @@ else
     {
     hasHorizontalOrientation_var = false;
 
+   // cr->translate(0, 0);
+   // cr->rotate_degrees(90); //HERE
+
     rulerLength = height_var;
     traceLengthLimit = width_var;
     }
@@ -311,7 +314,7 @@ int textHeight, textWidth;
 textDrawing->get_pixel_size(textWidth, textHeight);
 
 //cout << textWidth << " " << textHeight << endl;
-cout << "i " << i << " textWidth " << textWidth  << " x_position " << i - textWidth / 2 << endl;
+//cout << "i " << i << " textWidth " << textWidth  << " x_position " << i - textWidth / 2 << endl;
 
 
     //place the text in the center of the ruler, and also centered with the line mark

@@ -13,6 +13,7 @@ class SecondaryWindow : public Gtk::Window
 
         void open();
 
+
     private:
 
 

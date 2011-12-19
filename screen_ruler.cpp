@@ -34,12 +34,32 @@ set_resizable(true);
 show_all_children();
 
     //for dragging with left click
-add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK );
+add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_MASK );
 
 signal_button_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::buttonPressEvents ) );
+signal_key_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::keyboardShortcuts ) );
+
+
+signal_hide().connect( sigc::mem_fun( *this, &ScreenRuler::whenClosingWindow ) );
+
+    //updates the configurations values from the external file
+configurations_var.load();
+
+    // and make the apropriate changes
+load();
 }
 
 
+
+
+/*
+    Save the program's state when we close the window
+ */
+
+void ScreenRuler::whenClosingWindow()
+{
+configurations_var.save();
+}
 
 
 
@@ -110,6 +130,23 @@ m_refActionGroup->add(Gtk::Action::create("Options", "Options"),
 }
 
 
+
+/*
+    Change the program in according to the configurations
+ */
+
+void ScreenRuler::load()
+{
+    cout << configurations_var.units << endl;
+setUnits( configurations_var.units );
+}
+
+
+
+/*
+    Middle click --> rotate the ruler 90 degrees
+    Right click  --> open the popup menu
+ */
 
 bool ScreenRuler::buttonPressEvents(GdkEventButton* event)
 {
@@ -213,6 +250,28 @@ return true;
 
 
 
+/*
+    alt + ( o )ptions --> open the options window
+ */
+
+bool ScreenRuler::keyboardShortcuts(GdkEventKey* event)
+{
+    //alt + ( o )ptions --> open the options window
+if (event->type   == GDK_KEY_PRESS &&
+   (event->keyval == GDK_KEY_O || event->keyval == GDK_KEY_o) &&
+   (event->state  & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK)) == GDK_MOD1_MASK)
+    {
+    options.open();
+
+    return true;
+    }
+
+return false;
+}
+
+
+
+
 void ScreenRuler::on_menu_file_popup_generic()
 {
    std::cout << "A popup menu item was selected." << std::endl;
@@ -223,6 +282,17 @@ void ScreenRuler::on_menu_file_popup_generic()
 std::string ScreenRuler::getOrientation() const
 {
 return orientation_var;
+}
+
+
+bool ScreenRuler::hasHorizontalOrientation() const  //HERE
+{
+if (getOrientation() == "left")
+    {
+    return true;
+    }
+
+return false;
 }
 
 

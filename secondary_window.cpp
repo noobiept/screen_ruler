@@ -1,5 +1,5 @@
 #include "secondary_window.h"
-
+#include "main.h"
 
 
 SecondaryWindow::SecondaryWindow()
@@ -21,6 +21,9 @@ void SecondaryWindow::open()
 {
 present();
 }
+
+
+
 
 
 /*

@@ -8,6 +8,7 @@
 #include "draw.h"
 #include "options.h"
 #include "about.h"
+#include "configurations.h"
 
 class ScreenRuler : public Gtk::Window
 {
@@ -16,18 +17,21 @@ class ScreenRuler : public Gtk::Window
         ScreenRuler();
 
 
-        std::string getOrientation() const;
-        std::string getUnits() const;
+        bool hasHorizontalOrientation() const;
+        std::string getOrientation() const; //HERE substitute for hasHorizontalOrientation()
+
 
         void setUnits( std::string unit );
-
+        std::string getUnits() const;
 
         Draw draw;
+        Options options;
+        About about;
 
 
     private:
 
-        friend class Options;
+        Configurations configurations_var;
 
             // :: Ruler events :: //
 
@@ -36,10 +40,8 @@ class ScreenRuler : public Gtk::Window
         virtual bool on_motion_notify_event(GdkEventMotion* event);
         virtual bool on_leave_notify_event(GdkEventMotion* event);
 
+        bool keyboardShortcuts(GdkEventKey* event);
 
-
-        Options options;
-        About about;
 
 
 
@@ -55,7 +57,9 @@ class ScreenRuler : public Gtk::Window
         void on_menu_file_popup_generic();
 
 
+        void load();
 
+        void whenClosingWindow();
 
 
         int mouse_beg_x, mouse_beg_y;

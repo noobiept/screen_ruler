@@ -10,7 +10,6 @@
 
         rotate n esta certo ainda ..
 
-        atalho de teclado para as options
 
  */
 
