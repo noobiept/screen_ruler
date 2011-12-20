@@ -144,7 +144,14 @@ cr->begin_new_path();
 
 
 cr->set_line_width(0.5);
-cr->set_source_rgba(0, 0, 0, 1);
+
+Gdk::RGBA numberLinesColor = CONFIGURATIONS.numberLinesColor;
+
+cr->set_source_rgba(
+                    numberLinesColor.get_red(),
+                    numberLinesColor.get_green(),
+                    numberLinesColor.get_blue(),
+                    numberLinesColor.get_alpha() );
 
 
 
@@ -318,6 +325,8 @@ if (hasHorizontalOrientation_var == false)
 Glib::RefPtr<Pango::Layout> textDrawing = Pango::Layout::create( context );
 
 textDrawing->set_text( stream.str() );
+
+
 
 int textHeight, textWidth;
 

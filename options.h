@@ -13,6 +13,11 @@ class Options : public SecondaryWindow
 
         Options();
 
+        void setAlwaysAbove( bool yesNo );
+
+        void setBackgroundColor( Gdk::RGBA color );
+
+        void setNumberLinesColor( Gdk::RGBA color );
 
     private:
 
@@ -22,6 +27,8 @@ class Options : public SecondaryWindow
 
         void onUnitsChange(std::string unit, Gtk::RadioButton* button);
 
+        void backgroundColorEvents();
+        void numberLinesColorEvents();
 
             // :: Layout :: //
 

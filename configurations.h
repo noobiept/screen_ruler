@@ -40,6 +40,12 @@ class Configurations
         Gdk::RGBA numberLinesColor;
 
 
+        int rulerPosition_x;
+        int rulerPosition_y;
+
+        int optionsPosition_x;
+        int optionsPosition_y;      //there's also the About window, but there's no need to save its position, since it won't be used alot
+
 
     private:
 

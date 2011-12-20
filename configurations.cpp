@@ -17,7 +17,13 @@ Configurations::Configurations()
       hasHorizontalOrientation( true ),
 
       rulerWidth( 500 ),
-      rulerHeight( 50 )
+      rulerHeight( 50 ),
+
+      rulerPosition_x( -1 ),
+      rulerPosition_y( -1 ),    // -1 means to let the program choose the position (not force a specific position)
+
+      optionsPosition_x( -1 ),
+      optionsPosition_y( -1 )
 
 {
 backgroundColor.set_rgba( 0.87, 0.83, 0.13, 0.5 );
@@ -59,6 +65,31 @@ if (config.is_open() == true)
     config << "numberLinesColor-green: " << numberLinesColor.get_green() << "\n";
     config << "numberLinesColor-blue: "  << numberLinesColor.get_blue()  << "\n";
     config << "numberLinesColor-alpha: " << numberLinesColor.get_alpha() << "\n";
+
+
+            // :: Window's position :: //
+
+    int x, y;
+
+    SCREEN_RULER->get_position( x, y );     //this one is always opened while the program is running, so no need to check as below
+
+    config << "rulerPosition_x: " << x << "\n";
+    config << "rulerPosition_y: " << y << "\n";
+
+
+    if ( SCREEN_RULER->options.isOpened() == false )
+        {
+        x = y = -1;
+        }
+
+    else
+        {
+        SCREEN_RULER->options.get_position( x, y );
+        }
+
+
+    config << "optionsPosition_x: " << x << "\n";
+    config << "optionsPosition_y: " << y << "\n";
 
 
     config.close ();
@@ -141,7 +172,7 @@ if (config.is_open() == true)
 
         // :: background color :: //
 
-    int red, green, blue, alpha;
+    double red, green, blue, alpha;
 
     getline( config, line );
     red = getPropertyValue< double >( line, "backgroundColor-red" );
@@ -159,7 +190,7 @@ if (config.is_open() == true)
     this->backgroundColor.set_rgba( red, green, blue, alpha );
 
 
-        // number and lines color :: //
+        // :: number and lines color :: //
 
     getline( config, line );
     red = getPropertyValue< double >( line, "numberLinesColor-red" );
@@ -175,6 +206,29 @@ if (config.is_open() == true)
 
 
     this->numberLinesColor.set_rgba( red, green, blue, alpha );
+
+
+        // :: Ruler window position :: //
+
+    getline( config, line );
+
+    rulerPosition_x = getPropertyValue< int >( line, "rulerPosition_x" );
+
+    getline( config, line );
+
+    rulerPosition_y = getPropertyValue< int >( line, "rulerPosition_y" );
+
+
+        // :: Options window position :: //
+
+        getline( config, line );
+
+    optionsPosition_x = getPropertyValue< int >( line, "optionsPosition_x" );
+
+
+    getline( config, line );
+
+    optionsPosition_y = getPropertyValue< int >( line, "optionsPosition_y" );
 
 
     config.close();

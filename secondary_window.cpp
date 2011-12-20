@@ -3,6 +3,9 @@
 
 
 SecondaryWindow::SecondaryWindow()
+
+    : isOpened_var( false )
+
 {
     // :::: Events :::: //
 
@@ -19,7 +22,26 @@ this->signal_key_release_event().connect ( sigc::mem_fun( *this, &SecondaryWindo
 
 void SecondaryWindow::open()
 {
+isOpened_var = true;
+
 present();
+}
+
+
+
+bool SecondaryWindow::isOpened() const
+{
+return isOpened_var;
+}
+
+
+
+
+void SecondaryWindow::on_hide ()
+{
+isOpened_var = false;
+
+Gtk::Window::on_hide();
 }
 
 

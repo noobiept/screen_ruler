@@ -4,10 +4,6 @@
 /*
     to doo:
 
-        gravar a ultima posicao da janela (vale a pena?..)
-
-        gravar as opcoes
-
         poder rodar outros angulos (sem ser apenas 90 graus)
 
         usar o rotate() do Cairo para rodar a regua.. simplifica o codigo

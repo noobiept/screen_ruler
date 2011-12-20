@@ -41,13 +41,6 @@ add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_M
 
 signal_button_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::buttonPressEvents ) );
 signal_key_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::keyboardShortcuts ) );
-
-
-signal_hide().connect( sigc::mem_fun( *this, &ScreenRuler::whenClosingWindow ) );
-
-
-    // and make the apropriate changes
-load();
 }
 
 
@@ -57,9 +50,11 @@ load();
     Save the program's state when we close the window
  */
 
-void ScreenRuler::whenClosingWindow()
+void ScreenRuler::on_hide()
 {
 CONFIGURATIONS.save();
+
+Gtk::Window::on_hide();
 }
 
 
@@ -83,7 +78,6 @@ void ScreenRuler::createMenu(ScreenRuler* ruler)
   m_refActionGroup->add(Gtk::Action::create("ContextMenu", "Context Menu"));
 
 m_refActionGroup->add(Gtk::Action::create("Options", "Options"),
-          Gtk::AccelKey("<control>O"),
           sigc::mem_fun(options, &Options::open));
 
 
@@ -138,7 +132,65 @@ m_refActionGroup->add(Gtk::Action::create("Options", "Options"),
 
 void ScreenRuler::load()
 {
+    // :: Units :: //
+
 setUnits( CONFIGURATIONS.units );
+
+
+    // :: open options window :: //
+
+if ( CONFIGURATIONS.isOptionsOpened == true )
+    {
+    options.open();
+
+        //we want this window to have precedence (to be in front)
+    present();
+    }
+
+
+    // :: Window always above :: //
+
+if ( CONFIGURATIONS.isAlwaysAbove == true )
+    {
+    options.setAlwaysAbove( true );
+    }
+
+
+    // :: Ruler orientation :: //
+
+if ( CONFIGURATIONS.hasHorizontalOrientation == false )
+    {
+    setHorizontalOrientation( false );
+    }
+
+
+    // :: Ruler width and height :: //
+
+resize( CONFIGURATIONS.rulerWidth, CONFIGURATIONS.rulerHeight );
+
+
+    // :: Background color :: //
+
+options.setBackgroundColor( CONFIGURATIONS.backgroundColor );
+
+    // :: Numbers and lines color :: //
+
+options.setNumberLinesColor( CONFIGURATIONS.numberLinesColor );
+
+
+    // :: Ruler window position :: //
+
+if ( CONFIGURATIONS.rulerPosition_x >= 0 && CONFIGURATIONS.rulerPosition_y >= 0 )
+    {
+    move( CONFIGURATIONS.rulerPosition_x, CONFIGURATIONS.rulerPosition_y );
+    }
+
+    // :: Options window position :: //
+
+if ( CONFIGURATIONS.optionsPosition_x >= 0 && CONFIGURATIONS.optionsPosition_y >= 0 )
+    {
+    options.move( CONFIGURATIONS.optionsPosition_x, CONFIGURATIONS.optionsPosition_y );
+    }
 }
 
 
@@ -170,32 +222,8 @@ if (event->type == GDK_BUTTON_PRESS && event->button == 3)
     //on middle click, rotate the ruler
 else if (event->type == GDK_BUTTON_PRESS && event->button == 2)
     {
-    Glib::RefPtr<Gdk::Window> window = get_window();
-
-    if (!window)
-        {
-        cout << "no window" << endl;
-
-        return true;
-        }
-
-
-    if (orientation_var == "left")
-        {
-        orientation_var = "up";
-        }
-
-    else
-        {
-        orientation_var = "left";
-        }
-
-
-    int width = window->get_width();
-    int height = window->get_height();
-
-
-    window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
+        //change to the other orientation (of whatever is set)
+    setHorizontalOrientation( !hasHorizontalOrientation() );
     }
 
 
@@ -296,6 +324,37 @@ return false;
 }
 
 
+void ScreenRuler::setHorizontalOrientation( bool yesNo )
+{
+Glib::RefPtr<Gdk::Window> window = get_window();
+
+if (!window)
+    {
+    cout << "no window" << endl;
+
+    return;
+    }
+
+
+if (orientation_var == "left")  //HERE substituir por um bool hasHorizontalOrientation ...
+    {
+    orientation_var = "up";
+    }
+
+else
+    {
+    orientation_var = "left";
+    }
+
+
+int width = window->get_width();
+int height = window->get_height();
+
+
+window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
+}
+
+
 
 std::string ScreenRuler::getUnits() const
 {
@@ -307,3 +366,5 @@ void ScreenRuler::setUnits( std::string units )
 {
 units_var = units;
 }
+
+

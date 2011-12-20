@@ -22,6 +22,7 @@ backgroundColorLabel_ui.set_label( "Background color" );
 backgroundColor_ui.set_title( "Select a color" );
 backgroundColor_ui.set_rgba( CONFIGURATIONS.backgroundColor );
 
+backgroundColor_ui.set_use_alpha( true );       //HERE n fica transparente.. se calhar por causa da Gtk::Window ?..
 
     // :: Number and lines color :: //
 
@@ -30,7 +31,7 @@ numberLinesColorLabel_ui.set_label( "Number and lines color" );
 numberLinesColor_ui.set_title( "Select a color" );
 numberLinesColor_ui.set_rgba( CONFIGURATIONS.numberLinesColor );
 
-
+numberLinesColor_ui.set_use_alpha( true );
 
     // :: Always above :: //
 
@@ -125,19 +126,11 @@ alwaysAbove_ui.signal_toggled().connect( sigc::mem_fun( *this, &Options::alwaysA
      pixels_ui.signal_clicked().connect( sigc::bind< std::string, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onUnitsChange ), "pixels"     , &pixels_ui      ) );
 centimeters_ui.signal_clicked().connect( sigc::bind< std::string, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onUnitsChange ), "centimeters", &centimeters_ui ) );
      inches_ui.signal_clicked().connect( sigc::bind< std::string, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onUnitsChange ), "inches"     , &inches_ui      ) );
+
+
+ backgroundColor_ui.signal_color_set().connect( sigc::mem_fun(*this, &Options::backgroundColorEvents  ) );
+numberLinesColor_ui.signal_color_set().connect( sigc::mem_fun(*this, &Options::numberLinesColorEvents ) );
 }
-
-
-
-
-
-
-
-void Options::alwaysAboveEvents()
-{
-SCREEN_RULER->set_keep_above( alwaysAbove_ui.get_active() );
-}
-
 
 
 
@@ -155,4 +148,67 @@ SCREEN_RULER->setUnits( unit );
 
 SCREEN_RULER->draw.forceReDraw();
 }
+
+
+
+
+void Options::alwaysAboveEvents()
+{
+setAlwaysAbove( alwaysAbove_ui.get_active() );
+}
+
+
+
+void Options::backgroundColorEvents()
+{
+Gdk::RGBA color = backgroundColor_ui.get_rgba();
+
+CONFIGURATIONS.backgroundColor = color;
+
+SCREEN_RULER->draw.forceReDraw();
+}
+
+
+void Options::numberLinesColorEvents()
+{
+Gdk::RGBA color = numberLinesColor_ui.get_rgba();
+
+CONFIGURATIONS.numberLinesColor = color;
+
+SCREEN_RULER->draw.forceReDraw();
+}
+
+
+/*
+    Sets the ruler to be always above the rest of the windows or not
+ */
+
+void Options::setAlwaysAbove( bool yesNo )
+{
+SCREEN_RULER->set_keep_above( yesNo );
+
+    //see if the CheckButton is in the right state
+if ( alwaysAbove_ui.get_active() != yesNo )
+    {
+    alwaysAbove_ui.set_active( yesNo );
+    }
+
+    //update the configurations
+CONFIGURATIONS.isAlwaysAbove = yesNo;
+}
+
+
+
+void Options::setBackgroundColor( Gdk::RGBA color )
+{
+
+}
+
+
+
+void Options::setNumberLinesColor( Gdk::RGBA color )
+{
+
+}
+
 

@@ -24,6 +24,9 @@ CONFIGURATIONS.load();
 
 SCREEN_RULER = new ScreenRuler;
 
+    //reads the configurations and makes the apropriate changes
+SCREEN_RULER->load();
+
 
 Gtk::Main::run( *SCREEN_RULER );
 

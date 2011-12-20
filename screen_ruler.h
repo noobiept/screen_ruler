@@ -16,13 +16,17 @@ class ScreenRuler : public Gtk::Window
 
         ScreenRuler();
 
+        void load();
 
+
+        void setHorizontalOrientation( bool yesNo );
         bool hasHorizontalOrientation() const;
         std::string getOrientation() const; //HERE substitute for hasHorizontalOrientation()
 
 
         void setUnits( std::string unit );
         std::string getUnits() const;
+
 
         Draw draw;
         Options options;
@@ -43,6 +47,8 @@ class ScreenRuler : public Gtk::Window
         bool keyboardShortcuts(GdkEventKey* event);
 
 
+            //override Gtk::Window's function (when we close the program)
+        virtual void on_hide();
 
 
             // :: Popup menu :: //
@@ -56,10 +62,6 @@ class ScreenRuler : public Gtk::Window
         Gtk::Menu* m_pMenuPopup;
         void on_menu_file_popup_generic();
 
-
-        void load();
-
-        void whenClosingWindow();
 
 
         int mouse_beg_x, mouse_beg_y;
