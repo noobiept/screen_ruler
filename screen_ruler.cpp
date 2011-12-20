@@ -9,7 +9,7 @@ extern Configurations CONFIGURATIONS;
 ScreenRuler::ScreenRuler()
 
     : m_pMenuPopup( 0 ),
-      orientation_var( "left" ),
+      hasHorizontalOrientation_var( true ),
       units_var( "pixels" )
 
 {
@@ -307,20 +307,11 @@ void ScreenRuler::on_menu_file_popup_generic()
 
 
 
-std::string ScreenRuler::getOrientation() const
+
+
+bool ScreenRuler::hasHorizontalOrientation() const
 {
-return orientation_var;
-}
-
-
-bool ScreenRuler::hasHorizontalOrientation() const  //HERE
-{
-if (getOrientation() == "left")
-    {
-    return true;
-    }
-
-return false;
+return hasHorizontalOrientation_var;
 }
 
 
@@ -336,15 +327,7 @@ if (!window)
     }
 
 
-if (orientation_var == "left")  //HERE substituir por um bool hasHorizontalOrientation ...
-    {
-    orientation_var = "up";
-    }
-
-else
-    {
-    orientation_var = "left";
-    }
+hasHorizontalOrientation_var = yesNo;
 
 
 int width = window->get_width();

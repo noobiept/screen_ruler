@@ -20,7 +20,7 @@ class Draw : public Gtk::DrawingArea
             //Override default signal handler:
         virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
-        void measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion );
+        void measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion, int traceLengthLimit );
 
 
         int step_var;

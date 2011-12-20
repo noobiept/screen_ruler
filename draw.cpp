@@ -105,7 +105,7 @@ int traceLengthLimit;
     // ::  Determine the orientation :: //
 
 
-if (SCREEN_RULER->getOrientation() == "left")
+if (SCREEN_RULER->hasHorizontalOrientation() == true)
     {
     hasHorizontalOrientation_var = true;
 
@@ -118,8 +118,8 @@ else
     {
     hasHorizontalOrientation_var = false;
 
-   // cr->translate(0, 0);
-   // cr->rotate_degrees(90); //HERE
+    cr->translate( width_var, 0 );
+    cr->rotate_degrees( 90 );
 
     rulerLength = height_var;
     traceLengthLimit = width_var;
@@ -169,7 +169,7 @@ for (int i = 0 ; i < limit ; i += step_var)
         {
         lineLength = large;
 
-        measureAsText( cr, i, units, shortUnits, proportion );
+        measureAsText( cr, i, units, shortUnits, proportion, traceLengthLimit );
         }
 
     else if (((i % 50) * step_var) == 0)
@@ -183,19 +183,8 @@ for (int i = 0 ; i < limit ; i += step_var)
         }
 
 
-    if (hasHorizontalOrientation_var == true)
-        {
-        cr->move_to(i * proportion, 0);
-        cr->line_to(i * proportion, lineLength);
-        }
-
-    else
-        {
-        cr->move_to(0, i * proportion);
-        cr->line_to(lineLength, i * proportion);
-        }
-
-    //cr->stroke();
+    cr->move_to(i * proportion, 0);
+    cr->line_to(i * proportion, lineLength);
     }
 
 cr->stroke();
@@ -228,32 +217,14 @@ for (int i = 0 ; i < limit ; i += step_var )
         lineLength = small;
         }
 
-    //HERE
-    if (hasHorizontalOrientation_var == true)
-        {
-        cr->move_to(i * proportion, traceLengthLimit);
-        cr->line_to(i * proportion, traceLengthLimit - lineLength);
-        }
 
-    else
-        {
-        cr->move_to(traceLengthLimit, i * proportion);
-        cr->line_to(traceLengthLimit - lineLength, i * proportion);
-        }
-
+    cr->move_to(i * proportion, traceLengthLimit);
+    cr->line_to(i * proportion, traceLengthLimit - lineLength);
     }
 
 cr->stroke();
 
 
-
-if (hasHorizontalOrientation_var == false)
-    {
-    //int pi = 3.14;
-
-    cr->rotate_degrees(110);
-    cr->stroke();
-    }
 
 
 
@@ -261,11 +232,12 @@ return true;
 }
 
 
+
 /*
         //HERE nao ter k passar tantos argumentos... por coisas na classe
  */
 
-void Draw::measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion )
+void Draw::measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion, int traceLengthLimit )
 {
     // draw the text
 
@@ -306,26 +278,7 @@ else
     }
 
 
-//Glib::RefPtr<Pango::Layout> textDrawing = Gtk::Widget::create_pango_layout( stream.str() );
-Glib::RefPtr<Pango::Context> context = Gtk::Widget::create_pango_context();
-
-
-if (hasHorizontalOrientation_var == false)
-    {
-    //Glib::RefPtr< Pango::Context > context = textDrawing->get_context();
-
-    context->set_base_gravity( Pango::GRAVITY_EAST );
-
-    //double pi = 3.14;
-
-    //cr->rotate(pi / 2);
-    }
-
-
-Glib::RefPtr<Pango::Layout> textDrawing = Pango::Layout::create( context );
-
-textDrawing->set_text( stream.str() );
-
+Glib::RefPtr<Pango::Layout> textDrawing = Gtk::Widget::create_pango_layout( stream.str() );
 
 
 int textHeight, textWidth;
@@ -333,20 +286,8 @@ int textHeight, textWidth;
     //get the text dimensions (it updates the variables above -- by reference)
 textDrawing->get_pixel_size(textWidth, textHeight);
 
-//cout << textWidth << " " << textHeight << endl;
-//cout << "i " << i << " textWidth " << textWidth  << " x_position " << i - textWidth / 2 << endl;
 
-
-    //place the text in the center of the ruler, and also centered with the line mark
-if (hasHorizontalOrientation_var == true)
-    {
-    cr->move_to( i * proportion - textWidth / 2, height_var / 2 - textHeight / 2 );
-    }
-
-else
-    {
-    cr->move_to( width_var / 2 - textWidth / 2, i * proportion - textHeight / 2 );
-    }
+cr->move_to( i * proportion - textWidth / 2, traceLengthLimit / 2 - textHeight / 2 );
 
 
 textDrawing->show_in_cairo_context(cr);
