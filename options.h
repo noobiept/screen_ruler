@@ -20,7 +20,7 @@ class Options : public SecondaryWindow
 
         void alwaysAboveEvents();
 
-        void onUnitsChange(std::string unit);
+        void onUnitsChange(std::string unit, Gtk::RadioButton* button);
 
 
             // :: Layout :: //
@@ -29,15 +29,21 @@ class Options : public SecondaryWindow
 
             Gtk::Box firstLine_ui;
 
-                Gtk::Label angleLabel_ui;
-                MySpinButton angle_ui;
-                Gtk::CheckButton alwaysAbove_ui;
+                Gtk::Label backgroundColorLabel_ui;
+                Gtk::ColorButton backgroundColor_ui;
+
+                Gtk::Label numberLinesColorLabel_ui;
+                Gtk::ColorButton numberLinesColor_ui;
+
+
 
             Gtk::Box secondLine_ui;
 
                 Gtk::RadioButton pixels_ui;
                 Gtk::RadioButton centimeters_ui;
                 Gtk::RadioButton inches_ui;
+
+                Gtk::CheckButton alwaysAbove_ui;
 
 };
 

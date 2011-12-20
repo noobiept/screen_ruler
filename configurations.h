@@ -5,6 +5,7 @@
     To save/load the state of the program
  */
 
+#include <gtkmm.h>
 
 #include <string>
 #include <iostream>
@@ -23,6 +24,8 @@ class Configurations
         void load();
 
 
+            // :: Variables (they're public only to get the value -- don't change outside of this class) :: //
+
         bool isAlwaysAbove;
 
         bool isOptionsOpened;
@@ -32,6 +35,9 @@ class Configurations
 
         double rulerWidth;
         double rulerHeight;
+
+        Gdk::RGBA backgroundColor;
+        Gdk::RGBA numberLinesColor;
 
 
 

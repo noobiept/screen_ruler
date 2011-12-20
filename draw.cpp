@@ -2,8 +2,12 @@
 #include "main.h"
 
 #include "screen_ruler.h"
+#include "configurations.h"
+
 
 extern ScreenRuler* SCREEN_RULER;
+
+extern Configurations CONFIGURATIONS;
 
 
 Draw::Draw()
@@ -32,7 +36,14 @@ height_var = allocation.get_height();
 
     // :: The background color :: //
 
-cr->set_source_rgba(0.87, 0.83, 0.13, 0.5);
+Gdk::RGBA backgroundColor = CONFIGURATIONS.backgroundColor;
+
+cr->set_source_rgba(
+                    backgroundColor.get_red(),
+                    backgroundColor.get_green(),
+                    backgroundColor.get_blue(),
+                    backgroundColor.get_alpha() );
+
 cr->rectangle(0, 0, width_var, height_var);
 cr->fill();
 

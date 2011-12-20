@@ -20,7 +20,8 @@ Configurations::Configurations()
       rulerHeight( 50 )
 
 {
-
+backgroundColor.set_rgba( 0.87, 0.83, 0.13, 0.5 );
+numberLinesColor.set_rgba( 0, 0, 0, 1 );
 }
 
 
@@ -46,6 +47,19 @@ if (config.is_open() == true)
 
     config << "rulerWidth: " << width << "\n";
     config << "rulerHeight: " << height << "\n";
+
+
+
+    config << "backgroundColor-red: "   << backgroundColor.get_red()   << "\n";
+    config << "backgroundColor-green: " << backgroundColor.get_green() << "\n";
+    config << "backgroundColor-blue: "  << backgroundColor.get_blue()  << "\n";
+    config << "backgroundColor-alpha: " << backgroundColor.get_alpha() << "\n";
+
+    config << "numberLinesColor-red: "   << numberLinesColor.get_red()   << "\n";
+    config << "numberLinesColor-green: " << numberLinesColor.get_green() << "\n";
+    config << "numberLinesColor-blue: "  << numberLinesColor.get_blue()  << "\n";
+    config << "numberLinesColor-alpha: " << numberLinesColor.get_alpha() << "\n";
+
 
     config.close ();
     }
@@ -123,6 +137,44 @@ if (config.is_open() == true)
     getline( config, line );
 
     this->rulerHeight = getPropertyValue< double >( line, "rulerHeight" );
+
+
+        // :: background color :: //
+
+    int red, green, blue, alpha;
+
+    getline( config, line );
+    red = getPropertyValue< double >( line, "backgroundColor-red" );
+
+    getline( config, line );
+    green = getPropertyValue< double >( line, "backgroundColor-green" );
+
+    getline( config, line );
+    blue = getPropertyValue< double >( line, "backgroundColor-blue" );
+
+    getline( config, line );
+    alpha = getPropertyValue< double >( line, "backgroundColor-alpha" );
+
+
+    this->backgroundColor.set_rgba( red, green, blue, alpha );
+
+
+        // number and lines color :: //
+
+    getline( config, line );
+    red = getPropertyValue< double >( line, "numberLinesColor-red" );
+
+    getline( config, line );
+    green = getPropertyValue< double >( line, "numberLinesColor-green" );
+
+    getline( config, line );
+    blue = getPropertyValue< double >( line, "numberLinesColor-blue" );
+
+    getline( config, line );
+    alpha = getPropertyValue< double >( line, "numberLinesColor-alpha" );
+
+
+    this->numberLinesColor.set_rgba( red, green, blue, alpha );
 
 
     config.close();

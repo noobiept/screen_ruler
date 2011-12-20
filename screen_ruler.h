@@ -8,7 +8,7 @@
 #include "draw.h"
 #include "options.h"
 #include "about.h"
-#include "configurations.h"
+
 
 class ScreenRuler : public Gtk::Window
 {
@@ -31,7 +31,7 @@ class ScreenRuler : public Gtk::Window
 
     private:
 
-        Configurations configurations_var;
+
 
             // :: Ruler events :: //
 

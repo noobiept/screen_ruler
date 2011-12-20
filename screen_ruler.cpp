@@ -1,6 +1,9 @@
 #include "screen_ruler.h"
 #include "main.h"
+#include "configurations.h"
 
+
+extern Configurations CONFIGURATIONS;
 
 
 ScreenRuler::ScreenRuler()
@@ -42,8 +45,6 @@ signal_key_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::keyboardSh
 
 signal_hide().connect( sigc::mem_fun( *this, &ScreenRuler::whenClosingWindow ) );
 
-    //updates the configurations values from the external file
-configurations_var.load();
 
     // and make the apropriate changes
 load();
@@ -58,7 +59,7 @@ load();
 
 void ScreenRuler::whenClosingWindow()
 {
-configurations_var.save();
+CONFIGURATIONS.save();
 }
 
 
@@ -137,8 +138,7 @@ m_refActionGroup->add(Gtk::Action::create("Options", "Options"),
 
 void ScreenRuler::load()
 {
-    cout << configurations_var.units << endl;
-setUnits( configurations_var.units );
+setUnits( CONFIGURATIONS.units );
 }
 
 
