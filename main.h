@@ -1,3 +1,26 @@
+/*
+
+	Copyright - 2011 - Pedro Ferreira
+
+	This file is part of Screen_ruler.
+
+    Screen_ruler is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Screen_ruler is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with Screen_ruler.  If not, see <http://www.gnu.org/licenses/>.
+
+ */
+
+
+
 #ifndef MAIN_GUARD
 #define MAIN_GUARD
 
@@ -11,7 +34,7 @@
         fazer icon
 
         ter a largura das linhas mais pequena (sem k 'perca' cor...)
-            as linhas nao teem todas a mesma largura.. um problema qualquer por ali
+            as linhas nao teem todas a mesma largura.. um problema qualquer por ali (nota-se mais qd esta com cm)
 
 
         por um dragHandler melhor (nos extremos, a ocupar a largura toda)
