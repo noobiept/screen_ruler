@@ -29,7 +29,7 @@ class ScreenRuler : public Gtk::Window
         std::string getShortUnits() const;
 
 
-        void rotate();
+        void rotate( bool toMiddleOfScreen = false );
 
         Draw draw;
         Options options;

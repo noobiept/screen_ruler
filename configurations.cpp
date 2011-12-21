@@ -43,7 +43,7 @@ if (config.is_open() == true)
     {
     config << "isAlwaysAbove: " << isAlwaysAbove << "\n";
 
-    config << "isOptionsOpened: " << SCREEN_RULER->options.property_visible() << "\n";      //HERE ou get_visible() ?..
+    config << "isOptionsOpened: " << SCREEN_RULER->options.isOpened() << "\n";
 
     config << "units: " << SCREEN_RULER->getUnits() << "\n";
     config << "hasHorizontalOrientation: " << SCREEN_RULER->hasHorizontalOrientation() << "\n";

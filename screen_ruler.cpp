@@ -36,7 +36,9 @@ set_resizable(true);
 
 show_all_children();
 
-    //for dragging with left click
+
+    // :: Events :: //
+
 add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_MASK );
 
 signal_button_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::buttonPressEvents ) );
@@ -71,7 +73,7 @@ m_refActionGroup->add( Gtk::Action::create( "ContextMenu", "Context Menu" ) );
 
 
 m_refActionGroup->add( Gtk::Action::create( "Options", "Options"), sigc::mem_fun( options, &Options::open ) );
-m_refActionGroup->add( Gtk::Action::create( "Rotate" , "Rotate" ), sigc::mem_fun( *ruler , &ScreenRuler::rotate ) );
+m_refActionGroup->add( Gtk::Action::create( "Rotate" , "Rotate" ), sigc::bind< bool >( sigc::mem_fun( *ruler , &ScreenRuler::rotate ), false) );
 m_refActionGroup->add( Gtk::Action::create( "About"  , "About"  ), sigc::mem_fun( about  , &About::open ) );
 m_refActionGroup->add( Gtk::Action::create( "Close"  , "Close"  ), sigc::mem_fun( *ruler , &Gtk::Window::hide ) );
 
@@ -189,11 +191,13 @@ if ( CONFIGURATIONS.optionsPosition_x >= 0 && CONFIGURATIONS.optionsPosition_y >
     Rotates the ruler 90 degrees
  */
 
-void ScreenRuler::rotate()
+void ScreenRuler::rotate( bool toMiddleOfScreen )
 {
     //change to the other orientation (of whatever is set)
-options.setOrientation( !hasHorizontalOrientation() );
+options.setOrientation( !hasHorizontalOrientation(), toMiddleOfScreen );
 }
+
+
 
 
 /*
@@ -234,9 +238,16 @@ return true;
 
 
 
+/*
+    Change the cursor of the mouse to show that the ruler is draggable
+
+    Drag the window when we're clicking (and moving)
+ */
+
 bool ScreenRuler::on_motion_notify_event(GdkEventMotion* event)
 {
-const Glib::RefPtr< Gdk::Cursor > cursor = Gdk::Cursor::create(Gdk::HAND2); //HERE qual o cursor do drag?..
+    //creating the drag cursor
+const Glib::RefPtr< Gdk::Cursor > cursor = Gdk::Cursor::create( Gdk::FLEUR );   //fleur?? wtf
 
 Glib::RefPtr<Gdk::Window> window = get_window();
 
@@ -285,15 +296,28 @@ return true;
 
 bool ScreenRuler::keyboardShortcuts(GdkEventKey* event)
 {
-    //alt + ( o )ptions --> open the options window
-if (event->type   == GDK_KEY_PRESS &&
-   (event->keyval == GDK_KEY_O || event->keyval == GDK_KEY_o) &&
-   (event->state  & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK)) == GDK_MOD1_MASK)
+if ( event->type == GDK_KEY_PRESS )
     {
-    options.open();
+        //alt + ( o )ptions --> open the options window
+    if ( (event->keyval == GDK_KEY_O || event->keyval == GDK_KEY_o) &&
+         (event->state  & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK)) == GDK_MOD1_MASK )
+        {
+        options.open();
 
-    return true;
+        return true;
+        }
+
+        //alt + ( r )otate --> rotate the ruler window
+    else if ( (event->keyval == GDK_KEY_R || event->keyval == GDK_KEY_r) &&
+         (event->state  & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK)) == GDK_MOD1_MASK )
+        {
+        rotate( true );
+
+        return true;
+        }
     }
+
+
 
 return false;
 }
@@ -317,7 +341,7 @@ Glib::RefPtr<Gdk::Window> window = get_window();
 
 if (!window)
     {
-    cout << "no window" << endl;
+    std::cout << "no window" << std::endl;
 
     return;
     }

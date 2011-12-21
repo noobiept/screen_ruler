@@ -11,7 +11,7 @@ class About : public SecondaryWindow
 
         About();
 
-
+        void open();
 
     private:
 

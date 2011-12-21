@@ -264,14 +264,18 @@ else
 
 void Options::setBackgroundColor( Gdk::RGBA color )
 {
+CONFIGURATIONS.backgroundColor = color;
 
+backgroundColor_ui.set_rgba( color );
 }
 
 
 
 void Options::setNumberLinesColor( Gdk::RGBA color )
 {
+CONFIGURATIONS.numberLinesColor = color;
 
+numberLinesColor_ui.set_rgba( color );
 }
 
 

@@ -132,12 +132,14 @@ int limit = rulerLength / proportion;
 
 
 
-    // :: draw the lines on top (or right/left?...) :: //
+    // :: draw the lines on top/right :: //
 
 cr->begin_new_path();
 
 
-cr->set_line_width(0.5);
+cr->set_line_width( 1 );
+
+//cr->set_antialias( Cairo::ANTIALIAS_GRAY );
 
 Gdk::RGBA numberLinesColor = CONFIGURATIONS.numberLinesColor;
 
@@ -168,6 +170,11 @@ for (int i = 0 ; i < limit ; i += step_var)
 
     else if (((i % 50) * step_var) == 0)
         {
+        lineLength = large;
+        }
+
+    else if (((i % 25) * step_var) == 0)
+        {
         lineLength = medium;
         }
 
@@ -186,7 +193,7 @@ cr->stroke();
 
 
 
-    // :: Draw the bottom (or right/left.. //HERE ) traces of the ruler :: //
+    // :: Draw the bottom/left traces of the ruler :: //
 
 for (int i = 0 ; i < limit ; i += step_var )
     {
@@ -196,6 +203,11 @@ for (int i = 0 ; i < limit ; i += step_var )
         }
 
     else if (((i % 50) * step_var) == 0)
+        {
+        lineLength = large;
+        }
+
+    else if (((i % 25) * step_var) == 0)
         {
         lineLength = medium;
         }

@@ -11,7 +11,7 @@ class SecondaryWindow : public Gtk::Window
         SecondaryWindow();
 
 
-        void open();
+        virtual void open();
 
 
         bool isOpened() const;

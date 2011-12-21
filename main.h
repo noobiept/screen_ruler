@@ -10,7 +10,12 @@
 
         fazer icon
 
-        fazer update das cores nas opcoes..
+        ter a largura das linhas mais pequena (sem k 'perca' cor...)
+            as linhas nao teem todas a mesma largura.. um problema qualquer por ali
+
+
+        por um dragHandler melhor (nos extremos, a ocupar a largura toda)
+
  */
 
 
