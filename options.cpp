@@ -18,23 +18,23 @@ Options::Options()
 
 backgroundColorLabel_ui.set_label( "Background color" );
 
-
 backgroundColor_ui.set_title( "Select a color" );
 backgroundColor_ui.set_rgba( CONFIGURATIONS.backgroundColor );
 
 backgroundColor_ui.set_use_alpha( true );       //HERE n fica transparente.. se calhar por causa da Gtk::Window ?..
 
+
     // :: Number and lines color :: //
 
-numberLinesColorLabel_ui.set_label( "Number and lines color" );
+numberLinesColorLabel_ui.set_label( "Number/lines color" );
 
 numberLinesColor_ui.set_title( "Select a color" );
 numberLinesColor_ui.set_rgba( CONFIGURATIONS.numberLinesColor );
 
 numberLinesColor_ui.set_use_alpha( true );
 
-    // :: Always above :: //
 
+    // :: Always above :: //
 
 alwaysAbove_ui.set_label( "Always above" );
 alwaysAbove_ui.set_active( CONFIGURATIONS.isAlwaysAbove );
@@ -46,10 +46,10 @@ alwaysAbove_ui.set_active( CONFIGURATIONS.isAlwaysAbove );
 centimeters_ui.set_label( "Centimeters" );
      inches_ui.set_label( "Inches" );
 
-Gtk::RadioButton::Group group = pixels_ui.get_group();
+Gtk::RadioButton::Group unitsGroup = pixels_ui.get_group();
 
-centimeters_ui.set_group( group );
-     inches_ui.set_group( group );
+centimeters_ui.set_group( unitsGroup );
+     inches_ui.set_group( unitsGroup );
 
 
 
@@ -69,40 +69,66 @@ else
     }
 
 
-    // :: First line - container :: //
+    // :: Orientation :: //
+
+orientation_ui.set_label( "Orientation" );  //HERE por tipo bold...
+
+horizontal_ui.set_label( "Horizontal" );
+vertical_ui.set_label( "Vertical" );
 
 
-firstLine_ui.set_spacing( 10 );
+Gtk::RadioButton::Group orientationGroup = horizontal_ui.get_group();
 
-firstLine_ui.set_orientation( Gtk::ORIENTATION_HORIZONTAL );
-
-firstLine_ui.add( backgroundColorLabel_ui  );
-firstLine_ui.add( backgroundColor_ui       );
-firstLine_ui.add( numberLinesColorLabel_ui );
-firstLine_ui.add( numberLinesColor_ui      );
-
-    // :: Second line - container :: //
-
-//secondLine_ui.set_homogeneous( true );
-
-secondLine_ui.set_spacing( 10 );
-secondLine_ui.set_orientation( Gtk::ORIENTATION_HORIZONTAL );
+vertical_ui.set_group( orientationGroup );
 
 
+if ( CONFIGURATIONS.hasHorizontalOrientation == false )
+    {
+    vertical_ui.set_active( true );
+    }
 
-secondLine_ui.add( pixels_ui      );
-secondLine_ui.add( centimeters_ui );
-secondLine_ui.add( inches_ui      );
-secondLine_ui.add( alwaysAbove_ui );
+else
+    {
+    horizontal_ui.set_active( true );
+    }
+
+
+
+    // :: Color containers :: //
+
+backgroundColorContainer_ui.set_spacing( 5 );
+backgroundColorContainer_ui.set_orientation( Gtk::ORIENTATION_HORIZONTAL );
+
+backgroundColorContainer_ui.pack_start( backgroundColorLabel_ui );
+backgroundColorContainer_ui.pack_start( backgroundColor_ui );
+
+
+numberLinesColorContainer_ui.set_spacing( 5 );
+numberLinesColorContainer_ui.set_orientation( Gtk::ORIENTATION_HORIZONTAL );
+
+numberLinesColorContainer_ui.pack_start( numberLinesColorLabel_ui );
+numberLinesColorContainer_ui.pack_start( numberLinesColor_ui );
 
 
     // :: Grid - the main container :: //
 
-container_ui.set_row_spacing( 20 );
-container_ui.set_orientation( Gtk::ORIENTATION_VERTICAL );
+container_ui.set_row_spacing( 5 );
+container_ui.set_column_spacing( 30 );
+container_ui.set_orientation( Gtk::ORIENTATION_HORIZONTAL );
+//container_ui.set_column_homogeneous( true );
 
-container_ui.add( firstLine_ui  );
-container_ui.add( secondLine_ui );
+
+container_ui.attach( pixels_ui, 0, 0, 1, 1 );
+container_ui.attach( centimeters_ui, 0, 1, 1, 1 );
+container_ui.attach( inches_ui, 0, 2, 1, 1 );
+
+container_ui.attach( orientation_ui, 1, 0, 1, 1 );
+container_ui.attach( horizontal_ui, 1, 1, 1, 1 );
+container_ui.attach( vertical_ui, 1, 2, 1, 1 );
+
+container_ui.attach( backgroundColorContainer_ui, 2, 0, 1, 1 );
+container_ui.attach( numberLinesColorContainer_ui, 2, 1, 1, 1 );
+container_ui.attach( alwaysAbove_ui, 2, 2, 1, 1 );
 
 
 
@@ -127,6 +153,9 @@ alwaysAbove_ui.signal_toggled().connect( sigc::mem_fun( *this, &Options::alwaysA
 centimeters_ui.signal_clicked().connect( sigc::bind< std::string, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onUnitsChange ), "centimeters", &centimeters_ui ) );
      inches_ui.signal_clicked().connect( sigc::bind< std::string, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onUnitsChange ), "inches"     , &inches_ui      ) );
 
+horizontal_ui.signal_clicked().connect( sigc::bind< bool, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onOrientationChange ), true,  &horizontal_ui ) );
+  vertical_ui.signal_clicked().connect( sigc::bind< bool, Gtk::RadioButton* >( sigc::mem_fun( *this, &Options::onOrientationChange ), false, &vertical_ui   ) );
+
 
  backgroundColor_ui.signal_color_set().connect( sigc::mem_fun(*this, &Options::backgroundColorEvents  ) );
 numberLinesColor_ui.signal_color_set().connect( sigc::mem_fun(*this, &Options::numberLinesColorEvents ) );
@@ -147,6 +176,19 @@ if ( button->get_active() == false )
 SCREEN_RULER->setUnits( unit );
 
 SCREEN_RULER->draw.forceReDraw();
+}
+
+
+
+void Options::onOrientationChange( bool horizontalOrientation, Gtk::RadioButton* button )
+{
+    //for the same reason as in Options::onUnitsChange()
+if ( button->get_active() == false )
+    {
+    return;
+    }
+
+setOrientation( horizontalOrientation, true );
 }
 
 
@@ -196,6 +238,27 @@ if ( alwaysAbove_ui.get_active() != yesNo )
     //update the configurations
 CONFIGURATIONS.isAlwaysAbove = yesNo;
 }
+
+
+
+
+void Options::setOrientation( bool horizontalOrientation, bool toMiddleOfScreen )
+{
+    //change the orientation
+SCREEN_RULER->setHorizontalOrientation( horizontalOrientation, toMiddleOfScreen );
+
+    //and update the ui
+if (horizontalOrientation == true)
+    {
+    horizontal_ui.set_active( true );
+    }
+
+else
+    {
+    vertical_ui.set_active( true );
+    }
+}
+
 
 
 

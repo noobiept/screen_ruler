@@ -13,10 +13,6 @@ extern Configurations CONFIGURATIONS;
 Draw::Draw()
 
     : step_var ( 5 ),    //from each line, how much pixels go
-
-      smallHeight_var( 0 ),     //HERE k valor para aqui
-      mediumHeight_var( 0 ),
-      largeHeight_var( 0 ),
       hasHorizontalOrientation_var( true )
 
 {
@@ -53,7 +49,7 @@ cr->fill();
     // :: Find which units to draw the ruler :: //
 
 std::string units = SCREEN_RULER->getUnits();
-std::string shortUnits = "px";
+std::string shortUnits = SCREEN_RULER->getShortUnits();
 
     //the proportion of the unit that is set to pixels
 double proportion = 1;
@@ -64,8 +60,6 @@ Glib::RefPtr< Gdk::Screen > screen = get_window()->get_screen();
 
 if (units == "centimeters")
     {
-    shortUnits = "cm";
-
         // 1 mm     -> something pixel
         // width mm -> width pixel
 
@@ -78,8 +72,6 @@ if (units == "centimeters")
 
 else if (units == "inches")
     {
-    shortUnits = "''";
-
         // we'll calculate inches from centimeters
     double pxToMm = 1.0 * screen->get_width() / screen->get_width_mm();
 
@@ -118,6 +110,8 @@ else
     {
     hasHorizontalOrientation_var = false;
 
+
+        //rotate the image
     cr->translate( width_var, 0 );
     cr->rotate_degrees( 90 );
 
@@ -192,12 +186,6 @@ cr->stroke();
 
 
 
-
-
-
-    // :: draw in centimeters :: //
-
-
     // :: Draw the bottom (or right/left.. //HERE ) traces of the ruler :: //
 
 for (int i = 0 ; i < limit ; i += step_var )
@@ -227,9 +215,9 @@ cr->stroke();
 
 
 
-
 return true;
 }
+
 
 
 
@@ -245,6 +233,7 @@ std::stringstream stream;
 
 if (units == "pixels")
     {
+        //only show the units every two numbers
     if (showUnit_var == false)
         {
         showUnit_var = true;
@@ -284,7 +273,7 @@ Glib::RefPtr<Pango::Layout> textDrawing = Gtk::Widget::create_pango_layout( stre
 int textHeight, textWidth;
 
     //get the text dimensions (it updates the variables above -- by reference)
-textDrawing->get_pixel_size(textWidth, textHeight);
+textDrawing->get_pixel_size( textWidth, textHeight );
 
 
 cr->move_to( i * proportion - textWidth / 2, traceLengthLimit / 2 - textHeight / 2 );
@@ -295,10 +284,12 @@ textDrawing->show_in_cairo_context(cr);
 
 
 
+/*
+    force our program to redraw the entire image (useful when changing the options, for example)
+ */
 
 void Draw::forceReDraw()
 {
-    // force our program to redraw the entire image
 Glib::RefPtr<Gdk::Window> win = get_window();
 
 if (win)

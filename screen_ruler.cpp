@@ -10,7 +10,8 @@ ScreenRuler::ScreenRuler()
 
     : m_pMenuPopup( 0 ),
       hasHorizontalOrientation_var( true ),
-      units_var( "pixels" )
+      units_var( "pixels" ),
+      shortUnits_var( "px" )
 
 {
 createMenu( this );
@@ -30,7 +31,6 @@ set_default_size(500, 50);
 
 
 set_size_request(50, 20);
-//window.drag_highlight();
 
 set_resizable(true);
 
@@ -65,62 +65,51 @@ Gtk::Window::on_hide();
 
 void ScreenRuler::createMenu(ScreenRuler* ruler)
 {
- //Create actions:
+m_refActionGroup = Gtk::ActionGroup::create();
 
-  //Fill menu:
-
-  m_refActionGroup = Gtk::ActionGroup::create();
-
-  //File|New sub menu:
-  //These menu actions would normally already exist for a main menu, because a
-  //context menu should not normally contain menu items that are only available
-  //via a context menu.
-  m_refActionGroup->add(Gtk::Action::create("ContextMenu", "Context Menu"));
-
-m_refActionGroup->add(Gtk::Action::create("Options", "Options"),
-          sigc::mem_fun(options, &Options::open));
+m_refActionGroup->add( Gtk::Action::create( "ContextMenu", "Context Menu" ) );
 
 
-  m_refActionGroup->add( Gtk::Action::create("About", "About"),
-          sigc::mem_fun( about, &About::open ) );
+m_refActionGroup->add( Gtk::Action::create( "Options", "Options"), sigc::mem_fun( options, &Options::open ) );
+m_refActionGroup->add( Gtk::Action::create( "Rotate" , "Rotate" ), sigc::mem_fun( *ruler , &ScreenRuler::rotate ) );
+m_refActionGroup->add( Gtk::Action::create( "About"  , "About"  ), sigc::mem_fun( about  , &About::open ) );
+m_refActionGroup->add( Gtk::Action::create( "Close"  , "Close"  ), sigc::mem_fun( *ruler , &Gtk::Window::hide ) );
 
 
+m_refUIManager = Gtk::UIManager::create();
+m_refUIManager->insert_action_group( m_refActionGroup );
 
-  m_refActionGroup->add(Gtk::Action::create("Close", "Close"),
-          sigc::mem_fun(*ruler, &Gtk::Window::hide));
-
-
-
-  m_refUIManager = Gtk::UIManager::create();
-  m_refUIManager->insert_action_group(m_refActionGroup);
-
-  add_accel_group(m_refUIManager->get_accel_group());
+add_accel_group( m_refUIManager->get_accel_group() );
 
   //Layout the actions in a menubar and toolbar:
-  Glib::ustring ui_info =
+Glib::ustring ui_info =
         "<ui>"
         "  <popup name='PopupMenu'>"
         "    <menuitem action='Options'/>"
+        "    <menuitem action='Rotate'/>"
         "    <menuitem action='About'/>"
         "    <menuitem action='Close'/>"
         "  </popup>"
         "</ui>";
 
-  try
-  {
+try
+    {
     m_refUIManager->add_ui_from_string(ui_info);
-  }
-  catch(const Glib::Error& ex)
-  {
+    }
+
+catch (const Glib::Error& ex)
+    {
     std::cerr << "building menus failed: " <<  ex.what();
-  }
+    }
 
-  //Get the menu:
-  m_pMenuPopup = dynamic_cast<Gtk::Menu*>(
-          m_refUIManager->get_widget("/PopupMenu"));
-  if(!m_pMenuPopup)
+
+    //Get the menu:
+m_pMenuPopup = dynamic_cast< Gtk::Menu* >( m_refUIManager->get_widget( "/PopupMenu" ) );
+
+if(!m_pMenuPopup)
+    {
     g_warning("menu not found");
-
+    }
 
 }
 
@@ -195,6 +184,18 @@ if ( CONFIGURATIONS.optionsPosition_x >= 0 && CONFIGURATIONS.optionsPosition_y >
 
 
 
+
+/*
+    Rotates the ruler 90 degrees
+ */
+
+void ScreenRuler::rotate()
+{
+    //change to the other orientation (of whatever is set)
+options.setOrientation( !hasHorizontalOrientation() );
+}
+
+
 /*
     Middle click --> rotate the ruler 90 degrees
     Right click  --> open the popup menu
@@ -223,7 +224,7 @@ if (event->type == GDK_BUTTON_PRESS && event->button == 3)
 else if (event->type == GDK_BUTTON_PRESS && event->button == 2)
     {
         //change to the other orientation (of whatever is set)
-    setHorizontalOrientation( !hasHorizontalOrientation() );
+    rotate();
     }
 
 
@@ -300,13 +301,6 @@ return false;
 
 
 
-void ScreenRuler::on_menu_file_popup_generic()
-{
-   std::cout << "A popup menu item was selected." << std::endl;
-}
-
-
-
 
 
 bool ScreenRuler::hasHorizontalOrientation() const
@@ -315,7 +309,9 @@ return hasHorizontalOrientation_var;
 }
 
 
-void ScreenRuler::setHorizontalOrientation( bool yesNo )
+
+
+void ScreenRuler::setHorizontalOrientation( bool yesNo, bool toMiddleOfScreen )
 {
 Glib::RefPtr<Gdk::Window> window = get_window();
 
@@ -327,14 +323,35 @@ if (!window)
     }
 
 
+    //its already in the right position
+if ( yesNo == hasHorizontalOrientation_var )
+    {
+    return;
+    }
+
 hasHorizontalOrientation_var = yesNo;
 
 
 int width = window->get_width();
 int height = window->get_height();
 
+if ( toMiddleOfScreen == true )
+    {
+    Glib::RefPtr< const Gdk::Screen > screen = get_screen();
 
-window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
+        //get screen dimensions
+    int screenWidth = screen->get_width();
+    int screenHeight = screen->get_height();
+
+    window->move_resize( screenWidth / 2 - height / 2, screenHeight / 2 - width / 2, height, width );
+    }
+
+    //calculate based on where the mouse is
+else
+    {
+    window->move_resize(mouse_beg_x - (mouse_beg_y - win_pos_beg_y), mouse_beg_y - (mouse_beg_x - win_pos_beg_x), height, width);
+    }
+
 }
 
 
@@ -345,9 +362,31 @@ return units_var;
 }
 
 
+std::string ScreenRuler::getShortUnits() const
+{
+return shortUnits_var;
+}
+
+
 void ScreenRuler::setUnits( std::string units )
 {
 units_var = units;
+
+
+if (units == "inches")
+    {
+    shortUnits_var = "''";
+    }
+
+else if (units == "pixels")
+    {
+    shortUnits_var = "px";
+    }
+
+else
+    {
+    shortUnits_var = "cm";
+    }
 }
 
 

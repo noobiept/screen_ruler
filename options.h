@@ -15,6 +15,8 @@ class Options : public SecondaryWindow
 
         void setAlwaysAbove( bool yesNo );
 
+        void setOrientation( bool horizontalOrientation, bool toMiddleOfScreen = false );
+
         void setBackgroundColor( Gdk::RGBA color );
 
         void setNumberLinesColor( Gdk::RGBA color );
@@ -27,6 +29,8 @@ class Options : public SecondaryWindow
 
         void onUnitsChange(std::string unit, Gtk::RadioButton* button);
 
+        void onOrientationChange( bool horizontalOrientation, Gtk::RadioButton* button );
+
         void backgroundColorEvents();
         void numberLinesColorEvents();
 
@@ -34,23 +38,29 @@ class Options : public SecondaryWindow
 
         Gtk::Grid container_ui;
 
-            Gtk::Box firstLine_ui;
+                // units column
+            Gtk::RadioButton pixels_ui;
+            Gtk::RadioButton centimeters_ui;
+            Gtk::RadioButton inches_ui;
+
+                // orientation column
+            Gtk::Label orientation_ui;
+            Gtk::RadioButton horizontal_ui;
+            Gtk::RadioButton vertical_ui;
+
+                // color (and alwaysAbove) column
+            Gtk::Box backgroundColorContainer_ui;
 
                 Gtk::Label backgroundColorLabel_ui;
                 Gtk::ColorButton backgroundColor_ui;
 
+            Gtk::Box numberLinesColorContainer_ui;
+
                 Gtk::Label numberLinesColorLabel_ui;
                 Gtk::ColorButton numberLinesColor_ui;
 
+            Gtk::CheckButton alwaysAbove_ui;
 
-
-            Gtk::Box secondLine_ui;
-
-                Gtk::RadioButton pixels_ui;
-                Gtk::RadioButton centimeters_ui;
-                Gtk::RadioButton inches_ui;
-
-                Gtk::CheckButton alwaysAbove_ui;
 
 };
 

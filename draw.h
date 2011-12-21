@@ -26,9 +26,6 @@ class Draw : public Gtk::DrawingArea
         int step_var;
 
 
-        double smallHeight_var;
-        double mediumHeight_var;
-        double largeHeight_var;
 
             //dimensions of the window where the DrawingArea is
         int width_var;

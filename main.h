@@ -8,6 +8,9 @@
 
         ter uma opcao para aparecer o numero de pixels em relacao ao rato (deste a origem)
 
+        fazer icon
+
+        fazer update das cores nas opcoes..
  */
 
 

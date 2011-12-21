@@ -19,13 +19,17 @@ class ScreenRuler : public Gtk::Window
         void load();
 
 
-        void setHorizontalOrientation( bool yesNo );
+        void setHorizontalOrientation( bool yesNo, bool toMiddleOfScreen = false );
         bool hasHorizontalOrientation() const;
 
 
         void setUnits( std::string unit );
         std::string getUnits() const;
 
+        std::string getShortUnits() const;
+
+
+        void rotate();
 
         Draw draw;
         Options options;
@@ -59,8 +63,6 @@ class ScreenRuler : public Gtk::Window
         Glib::RefPtr<Gtk::ActionGroup> m_refActionGroup;
 
         Gtk::Menu* m_pMenuPopup;
-        void on_menu_file_popup_generic();
-
 
 
         int mouse_beg_x, mouse_beg_y;
@@ -69,6 +71,7 @@ class ScreenRuler : public Gtk::Window
 
         bool hasHorizontalOrientation_var;
         std::string units_var;
+        std::string shortUnits_var;
 
 };
 
