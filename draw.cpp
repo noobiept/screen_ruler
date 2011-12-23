@@ -181,6 +181,25 @@ double lineLength = small;
     //reset this variable
 showUnit_var = false;
 
+
+    //draw less lines for centimeters
+if (units == "centimeters")
+    {
+    step_var = 10;
+    }
+
+else
+    {
+    step_var = 5;
+    }
+
+/*
+int largeLinePosition = 100;
+int otherLargeLinePosition = 50;    //HERE lol
+int mediumLinePosition = 25;
+*/
+
+
     // :: draw the top line :: //
 
 for (int i = 0 ; i < limit ; i += step_var)
@@ -195,6 +214,11 @@ for (int i = 0 ; i < limit ; i += step_var)
     else if (((i % 50) * step_var) == 0)
         {
         lineLength = large;
+
+        if (units == "centimeters")     //HERE ser + eficiente....
+            {
+            lineLength = medium;
+            }
         }
 
     else if (((i % 25) * step_var) == 0)
@@ -208,46 +232,27 @@ for (int i = 0 ; i < limit ; i += step_var)
         }
 
 
-    cr->move_to(i * proportion, 0);
-    cr->line_to(i * proportion, lineLength);
+
+    double temp = i * proportion;
+
+    int intPart = static_cast< int >( temp );
+
+
+        // align the 1 pixel width lines (this makes the ruler imprecise, for anything but pixels)
+        // The alternative is to let the traces sometimes occupy two pixels in width (with blurry lines)
+        // see http://cairographics.org/FAQ/#sharp_lines
+    temp = intPart + 0.5;
+
+        // Draw the top/right line
+    cr->move_to( temp, 0 );
+    cr->line_to( temp, lineLength );
+
+        // Draw the bottom/left traces of the ruler
+    cr->move_to( temp, traceLengthLimit );
+    cr->line_to( temp, traceLengthLimit - lineLength );
     }
 
 cr->stroke();
-
-
-
-
-    // :: Draw the bottom/left traces of the ruler :: //
-
-for (int i = 0 ; i < limit ; i += step_var )
-    {
-    if (((i % 100) * step_var) == 0)
-        {
-        lineLength = large;
-        }
-
-    else if (((i % 50) * step_var) == 0)
-        {
-        lineLength = large;
-        }
-
-    else if (((i % 25) * step_var) == 0)
-        {
-        lineLength = medium;
-        }
-
-    else
-        {
-        lineLength = small;
-        }
-
-
-    cr->move_to(i * proportion, traceLengthLimit);
-    cr->line_to(i * proportion, traceLengthLimit - lineLength);
-    }
-
-cr->stroke();
-
 
 
 
@@ -303,8 +308,14 @@ else
     }
 
 
+Pango::FontDescription font( "Serif" );
+
+font.set_weight( Pango::WEIGHT_BOLD );
+
+
 Glib::RefPtr<Pango::Layout> textDrawing = Gtk::Widget::create_pango_layout( stream.str() );
 
+textDrawing->set_font_description( font );
 
 int textHeight, textWidth;
 
