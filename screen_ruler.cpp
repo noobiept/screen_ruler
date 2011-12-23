@@ -35,7 +35,9 @@ ScreenRuler::ScreenRuler()
     : m_pMenuPopup( 0 ),
       hasHorizontalOrientation_var( true ),
       units_var( "pixels" ),
-      shortUnits_var( "px" )
+      shortUnits_var( "px" ),
+      canResize_var( false ),
+      resizeEdge_var( Gdk::WINDOW_EDGE_WEST )
 
 {
 createMenu( this );
@@ -63,7 +65,7 @@ show_all_children();
 
     // :: Events :: //
 
-add_events( Gdk::BUTTON_PRESS_MASK | Gdk::KEY_PRESS_MASK );
+add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_MASK );
 
 signal_button_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::buttonPressEvents ) );
 signal_key_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::keyboardShortcuts ) );
@@ -238,10 +240,25 @@ mouse_beg_y = event->y_root;
 get_position( win_pos_beg_x, win_pos_beg_y );
 
 
-    // left click -> start the drag of the window
+    // left click -> start the drag (or resize) of the window
 if (event->button == 1)
     {
-    get_window()->begin_move_drag( 1, event->x_root, event->y_root, event->time );
+    Glib::RefPtr<Gdk::Window> window = get_window();
+
+    if (window)
+        {
+            // resize the window
+        if ( canResize_var == true )
+            {
+            window->begin_resize_drag( resizeEdge_var, 1, event->x_root, event->y_root, event->time );
+            }
+
+            // drag the window
+        else
+            {
+            window->begin_move_drag( 1, event->x_root, event->y_root, event->time );
+            }
+        }
     }
 
     //right click -> open the popup menu
@@ -303,6 +320,120 @@ if ( event->type == GDK_KEY_PRESS )
 
 return false;
 }
+
+
+
+
+
+/*
+    Change the cursor of the mouse that you can resize the window on the extremes
+ */
+
+bool ScreenRuler::on_motion_notify_event(GdkEventMotion* event)
+{
+    //get the mouse position
+mouse_beg_x = event->x_root;
+mouse_beg_y = event->y_root;
+
+    //and the window's position too
+get_position( win_pos_beg_x, win_pos_beg_y );
+
+
+Glib::RefPtr<Gdk::Window> window = get_window();
+
+
+int rulerLength;
+int mousePosition, windowPosition;
+
+    // select the apropriate variables, depending on the ruler orientation
+if ( hasHorizontalOrientation_var == true )
+    {
+    rulerLength = window->get_width();
+
+    mousePosition = mouse_beg_x;
+    windowPosition = win_pos_beg_x;
+    }
+
+else
+    {
+    rulerLength = window->get_height();
+
+    mousePosition = mouse_beg_y;
+    windowPosition = win_pos_beg_y;
+    }
+
+
+    // the number of pixels where we allow the resize to occur (counting from the extremes)
+int resizeArea = 15;
+
+
+Glib::RefPtr< Gdk::Cursor > cursor;
+
+    //if the mouse is within the resize area to the left/top, change the cursor to the left/top resize
+if ((mousePosition - windowPosition) < resizeArea)
+    {
+    if ( hasHorizontalOrientation_var == true )
+        {
+        cursor = Gdk::Cursor::create( Gdk::LEFT_SIDE );
+        resizeEdge_var = Gdk::WINDOW_EDGE_WEST;
+        }
+
+    else
+        {
+        cursor = Gdk::Cursor::create( Gdk::TOP_SIDE );
+        resizeEdge_var = Gdk::WINDOW_EDGE_NORTH;
+        }
+
+
+
+    if (window)
+        {
+        window->set_cursor( cursor );
+        }
+
+    canResize_var = true;
+    }
+
+    //if its in the one to the right/bottom, change to the right/bottom resize cursor
+else if ((windowPosition + rulerLength - mousePosition) < resizeArea)
+    {
+    if ( hasHorizontalOrientation_var == true )
+        {
+        cursor = Gdk::Cursor::create( Gdk::RIGHT_SIDE );
+        resizeEdge_var = Gdk::WINDOW_EDGE_EAST;
+        }
+
+    else
+        {
+        cursor = Gdk::Cursor::create( Gdk::BOTTOM_SIDE );
+        resizeEdge_var = Gdk::WINDOW_EDGE_SOUTH;
+        }
+
+
+
+
+    if (window)
+        {
+        window->set_cursor( cursor );
+        }
+
+    canResize_var = true;
+    }
+
+    // normal cursor
+else
+    {
+    window->set_cursor();
+
+    canResize_var = false;
+    }
+
+
+
+ return true;
+ }
+
+
 
 
 

@@ -67,6 +67,8 @@ class ScreenRuler : public Gtk::Window
 
         bool buttonPressEvents(GdkEventButton* event);
 
+        virtual bool on_motion_notify_event(GdkEventMotion* event);
+
         bool keyboardShortcuts(GdkEventKey* event);
 
 
@@ -92,6 +94,11 @@ class ScreenRuler : public Gtk::Window
         bool hasHorizontalOrientation_var;
         std::string units_var;
         std::string shortUnits_var;
+
+
+            // for resize
+        bool canResize_var;
+        Gdk::WindowEdge resizeEdge_var;
 
 };
 

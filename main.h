@@ -33,8 +33,6 @@
 
         fazer icon
 
-        por um dragHandler melhor (nos extremos, a ocupar a largura toda)
-
  */
 
 
