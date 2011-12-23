@@ -67,9 +67,6 @@ class ScreenRuler : public Gtk::Window
 
         bool buttonPressEvents(GdkEventButton* event);
 
-        virtual bool on_motion_notify_event(GdkEventMotion* event);
-        virtual bool on_leave_notify_event(GdkEventMotion* event);
-
         bool keyboardShortcuts(GdkEventKey* event);
 
 

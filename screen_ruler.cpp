@@ -63,7 +63,7 @@ show_all_children();
 
     // :: Events :: //
 
-add_events( Gdk::BUTTON_PRESS_MASK | Gdk::POINTER_MOTION_MASK | Gdk::KEY_PRESS_MASK );
+add_events( Gdk::BUTTON_PRESS_MASK | Gdk::KEY_PRESS_MASK );
 
 signal_button_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::buttonPressEvents ) );
 signal_key_press_event().connect( sigc::mem_fun( *this, &ScreenRuler::keyboardShortcuts ) );
@@ -225,6 +225,7 @@ options.setOrientation( !hasHorizontalOrientation(), toMiddleOfScreen );
 
 
 /*
+    Left click   --> start the drag of the window
     Middle click --> rotate the ruler 90 degrees
     Right click  --> open the popup menu
  */
@@ -236,6 +237,12 @@ mouse_beg_y = event->y_root;
 
 get_position( win_pos_beg_x, win_pos_beg_y );
 
+
+    // left click -> start the drag of the window
+if (event->button == 1)
+    {
+    get_window()->begin_move_drag( 1, event->x_root, event->y_root, event->time );
+    }
 
     //right click -> open the popup menu
 if (event->type == GDK_BUTTON_PRESS && event->button == 3)
@@ -256,61 +263,12 @@ else if (event->type == GDK_BUTTON_PRESS && event->button == 2)
     }
 
 
-return true;
-}
-
-
-
-
-/*
-    Change the cursor of the mouse to show that the ruler is draggable
-
-    Drag the window when we're clicking (and moving)
- */
-
-bool ScreenRuler::on_motion_notify_event(GdkEventMotion* event)
-{
-    //creating the drag cursor
-const Glib::RefPtr< Gdk::Cursor > cursor = Gdk::Cursor::create( Gdk::FLEUR );   //fleur?? wtf
-
-Glib::RefPtr<Gdk::Window> window = get_window();
-
-if (window)
-    {
-    window->set_cursor(cursor);
-    }
-
-
-   //when clicking and moving the mouse, we drag the ruler
-if (event->state & GDK_BUTTON1_MASK)
-    {
-    int x = win_pos_beg_x + ( event->x_root - mouse_beg_x );
-    int y = win_pos_beg_y + ( event->y_root - mouse_beg_y );
-
-    move( x, y );
-    }
-
 
 
 return true;
 }
 
 
-/*
-    Get the normal cursor back
- */
-
-bool ScreenRuler::on_leave_notify_event(GdkEventMotion* event)
-{
-Glib::RefPtr<Gdk::Window> window = get_window();
-
-if (window)
-    {
-    window->set_cursor();
-    }
-
-return true;
-}
 
 
 
