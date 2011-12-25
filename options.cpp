@@ -38,8 +38,6 @@ Options::Options()
 {
     // :: Background color :: //
 
-colorLabel_ui.set_label( "Ruler's color" );
-
 backgroundColorLabel_ui.set_label( "Background" );
 
 backgroundColor_ui.set_title( "Select a color" );
@@ -95,8 +93,6 @@ else
 
     // :: Orientation :: //
 
-orientation_ui.set_label( "Orientation" );  //HERE por tipo bold...
-
 horizontal_ui.set_label( "Horizontal" );
 vertical_ui.set_label( "Vertical" );
 
@@ -119,7 +115,7 @@ else
 
     // :: Mouse Length  :: //
 
-mouseLengthLabel_ui.set_label( "Length" );
+
 mouseLength_ui.set_label( "0px" );
 
 
@@ -144,25 +140,19 @@ numberLinesColorContainer_ui.pack_start( numberLinesColor_ui );
 container_ui.set_row_spacing( 5 );
 container_ui.set_column_spacing( 30 );
 container_ui.set_orientation( Gtk::ORIENTATION_HORIZONTAL );
-//container_ui.set_column_homogeneous( true );
 
 
 container_ui.attach( pixels_ui, 0, 0, 1, 1 );
 container_ui.attach( centimeters_ui, 0, 1, 1, 1 );
 container_ui.attach( inches_ui, 0, 2, 1, 1 );
 
-container_ui.attach( orientation_ui, 1, 0, 1, 1 );
+container_ui.attach( alwaysAbove_ui, 1, 0, 1, 1 );
 container_ui.attach( horizontal_ui, 1, 1, 1, 1 );
 container_ui.attach( vertical_ui, 1, 2, 1, 1 );
 
-container_ui.attach( colorLabel_ui, 2, 0, 1, 1 );
-container_ui.attach( backgroundColorContainer_ui, 2, 1, 1, 1 );
-container_ui.attach( numberLinesColorContainer_ui, 2, 2, 1, 1 );
-
-container_ui.attach( alwaysAbove_ui, 3, 0, 1, 1 );
-container_ui.attach( mouseLengthLabel_ui, 3, 1, 1, 1 );
-container_ui.attach( mouseLength_ui, 3, 2, 1, 1);
-
+container_ui.attach( backgroundColorContainer_ui, 2, 0, 1, 1 );
+container_ui.attach( numberLinesColorContainer_ui, 2, 1, 1, 1 );
+container_ui.attach( mouseLength_ui, 2, 2, 1, 1);
 
 
     // :: Window :: //

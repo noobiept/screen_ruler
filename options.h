@@ -68,20 +68,12 @@ class Options : public SecondaryWindow
             Gtk::RadioButton centimeters_ui;
             Gtk::RadioButton inches_ui;
 
-                // orientation column
-            Gtk::Label orientation_ui;
+                // orientation/alwaysAbove column
+            Gtk::CheckButton alwaysAbove_ui;
             Gtk::RadioButton horizontal_ui;
             Gtk::RadioButton vertical_ui;
 
-
-                // other stuff
-            Gtk::CheckButton alwaysAbove_ui;
-            Gtk::Label mouseLengthLabel_ui;
-            Gtk::Label mouseLength_ui;
-
-
-                // color column
-            Gtk::Label colorLabel_ui;
+                // color/mouseLength column
 
             Gtk::Box backgroundColorContainer_ui;
 
@@ -92,6 +84,8 @@ class Options : public SecondaryWindow
 
                 Gtk::Label numberLinesColorLabel_ui;
                 Gtk::ColorButton numberLinesColor_ui;
+
+            Gtk::Label mouseLength_ui;
 
 };
 
