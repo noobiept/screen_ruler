@@ -38,8 +38,9 @@ Options::Options()
 {
     // :: Background color :: //
 
+colorLabel_ui.set_label( "Ruler's color" );
 
-backgroundColorLabel_ui.set_label( "Background color" );
+backgroundColorLabel_ui.set_label( "Background" );
 
 backgroundColor_ui.set_title( "Select a color" );
 backgroundColor_ui.set_rgba( CONFIGURATIONS.backgroundColor );
@@ -49,7 +50,7 @@ backgroundColor_ui.set_use_alpha( true );       //HERE n fica transparente.. se 
 
     // :: Number and lines color :: //
 
-numberLinesColorLabel_ui.set_label( "Number/lines color" );
+numberLinesColorLabel_ui.set_label( "Number/lines" );
 
 numberLinesColor_ui.set_title( "Select a color" );
 numberLinesColor_ui.set_rgba( CONFIGURATIONS.numberLinesColor );
@@ -116,6 +117,11 @@ else
     }
 
 
+    // :: Mouse Length  :: //
+
+mouseLengthLabel_ui.set_label( "Length" );
+mouseLength_ui.set_label( "0px" );
+
 
     // :: Color containers :: //
 
@@ -149,9 +155,13 @@ container_ui.attach( orientation_ui, 1, 0, 1, 1 );
 container_ui.attach( horizontal_ui, 1, 1, 1, 1 );
 container_ui.attach( vertical_ui, 1, 2, 1, 1 );
 
-container_ui.attach( backgroundColorContainer_ui, 2, 0, 1, 1 );
-container_ui.attach( numberLinesColorContainer_ui, 2, 1, 1, 1 );
-container_ui.attach( alwaysAbove_ui, 2, 2, 1, 1 );
+container_ui.attach( colorLabel_ui, 2, 0, 1, 1 );
+container_ui.attach( backgroundColorContainer_ui, 2, 1, 1, 1 );
+container_ui.attach( numberLinesColorContainer_ui, 2, 2, 1, 1 );
+
+container_ui.attach( alwaysAbove_ui, 3, 0, 1, 1 );
+container_ui.attach( mouseLengthLabel_ui, 3, 1, 1, 1 );
+container_ui.attach( mouseLength_ui, 3, 2, 1, 1);
 
 
 
@@ -302,3 +312,31 @@ numberLinesColor_ui.set_rgba( color );
 }
 
 
+
+/*
+    Shows number of pixels (or whatever unit is set) from the origin to where the mouse is
+
+    Only works when the mouse is over the ruler
+ */
+
+void Options::setMouseLength( int pixelLength )
+{
+std::string unit = SCREEN_RULER->getShortUnits();
+
+double proportion = SCREEN_RULER->draw.getProportion();
+
+
+double measure = pixelLength / proportion;
+
+if ( unit != "px" )
+    {
+    measure /= 100;
+    }
+
+std::stringstream stream;
+
+stream << measure << unit;
+
+
+mouseLength_ui.set_label( stream.str() );
+}

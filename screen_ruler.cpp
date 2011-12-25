@@ -430,6 +430,10 @@ else
 
 
 
+    // show in the options the number of pixels (or other unit) from the origin to where the mouse is
+options.setMouseLength( mousePosition - windowPosition );
+
+
  return true;
  }
 

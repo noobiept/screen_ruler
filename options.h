@@ -44,6 +44,8 @@ class Options : public SecondaryWindow
 
         void setNumberLinesColor( Gdk::RGBA color );
 
+        void setMouseLength( int pixelLength );
+
     private:
 
             // :: Event functions :: //
@@ -71,7 +73,16 @@ class Options : public SecondaryWindow
             Gtk::RadioButton horizontal_ui;
             Gtk::RadioButton vertical_ui;
 
-                // color (and alwaysAbove) column
+
+                // other stuff
+            Gtk::CheckButton alwaysAbove_ui;
+            Gtk::Label mouseLengthLabel_ui;
+            Gtk::Label mouseLength_ui;
+
+
+                // color column
+            Gtk::Label colorLabel_ui;
+
             Gtk::Box backgroundColorContainer_ui;
 
                 Gtk::Label backgroundColorLabel_ui;
@@ -81,9 +92,6 @@ class Options : public SecondaryWindow
 
                 Gtk::Label numberLinesColorLabel_ui;
                 Gtk::ColorButton numberLinesColor_ui;
-
-            Gtk::CheckButton alwaysAbove_ui;
-
 
 };
 

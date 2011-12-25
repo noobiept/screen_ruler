@@ -36,8 +36,10 @@ extern Configurations CONFIGURATIONS;
 
 Draw::Draw()
 
-    : step_var ( 5 ),    //from each line, how much pixels go
+    : step_var ( 5 ),           // from each line, how much pixels go
+      proportion_var( 1 ),          // default is pixels
       hasHorizontalOrientation_var( true )
+
 
 {
 
@@ -75,8 +77,7 @@ cr->fill();
 std::string units = SCREEN_RULER->getUnits();
 std::string shortUnits = SCREEN_RULER->getShortUnits();
 
-    //the proportion of the unit that is set to pixels
-double proportion = 1;
+
 
 Glib::RefPtr< Gdk::Screen > screen = get_window()->get_screen();
 
@@ -91,7 +92,7 @@ if (units == "centimeters")
 
     double pxToCm = pxToMm / 10;
 
-    proportion = pxToCm;
+    proportion_var = pxToCm;
     }
 
 else if (units == "inches")
@@ -104,10 +105,14 @@ else if (units == "inches")
         // 1 inch -> 2.54 cm
     double pxToInch = 2.54 * pxToCm;
 
-    proportion = pxToInch;
+    proportion_var = pxToInch;
     }
 
-
+    // pixels
+else
+    {
+    proportion_var = 1;
+    }
 
     //the length that we need to draw the lines/traces... its or the window's width or the height, depending on the orientation
 int rulerLength;
@@ -152,7 +157,7 @@ double large = traceLengthLimit / 3.0;
 
 
 
-int limit = rulerLength / proportion;
+int limit = rulerLength / proportion_var;
 
 
 
@@ -182,6 +187,8 @@ double lineLength = small;
 showUnit_var = false;
 
 
+
+
     //draw less lines for centimeters
 if (units == "centimeters")
     {
@@ -208,7 +215,7 @@ for (int i = 0 ; i < limit ; i += step_var)
         {
         lineLength = large;
 
-        measureAsText( cr, i, units, shortUnits, proportion, traceLengthLimit );
+        measureAsText( cr, i, units, shortUnits, traceLengthLimit );
         }
 
     else if (((i % 50) * step_var) == 0)
@@ -233,7 +240,7 @@ for (int i = 0 ; i < limit ; i += step_var)
 
 
 
-    double temp = i * proportion;
+    double temp = i * proportion_var;
 
     int intPart = static_cast< int >( temp );
 
@@ -266,7 +273,7 @@ return true;
         //HERE nao ter k passar tantos argumentos... por coisas na classe
  */
 
-void Draw::measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion, int traceLengthLimit )
+void Draw::measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, int traceLengthLimit )
 {
     // draw the text
 
@@ -323,7 +330,7 @@ int textHeight, textWidth;
 textDrawing->get_pixel_size( textWidth, textHeight );
 
 
-cr->move_to( i * proportion - textWidth / 2, traceLengthLimit / 2 - textHeight / 2 );
+cr->move_to( i * proportion_var - textWidth / 2, traceLengthLimit / 2 - textHeight / 2 );
 
 
 textDrawing->show_in_cairo_context(cr);
@@ -348,3 +355,12 @@ if (win)
 }
 
 
+
+/*
+    Pixels to other unit
+ */
+
+double Draw::getProportion() const
+{
+return proportion_var;
+}

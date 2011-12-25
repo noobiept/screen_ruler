@@ -29,8 +29,6 @@
 
         poder rodar outros angulos (sem ser apenas 90 graus)
 
-        ter uma opcao para aparecer o numero de pixels em relacao ao rato (deste a origem)
-
         fazer icon
 
  */

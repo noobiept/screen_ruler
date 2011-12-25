@@ -35,7 +35,7 @@ class Draw : public Gtk::DrawingArea
 
         Draw();
 
-
+        double getProportion() const;
         void forceReDraw();
 
     private:
@@ -43,11 +43,13 @@ class Draw : public Gtk::DrawingArea
             //Override default signal handler:
         virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
-        void measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, double proportion, int traceLengthLimit );
+        void measureAsText( const Cairo::RefPtr<Cairo::Context>& cr, int i, std::string units, std::string shortUnits, int traceLengthLimit );
 
-
+            // from how many pixels we start doing something
         int step_var;
 
+            //the proportion of the unit that is set, to pixels
+        double proportion_var;
 
 
             //dimensions of the window where the DrawingArea is
