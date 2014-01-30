@@ -48,5 +48,9 @@ SCREEN_RULER->load();
 
 Gtk::Main::run( *SCREEN_RULER );
 
+
+delete SCREEN_RULER;
+
+
 return EXIT_SUCCESS;
 }

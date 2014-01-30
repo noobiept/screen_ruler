@@ -168,7 +168,6 @@ cr->begin_new_path();
 
 cr->set_line_width( 1 );
 
-//cr->set_antialias( Cairo::ANTIALIAS_GRAY );
 
 Gdk::RGBA numberLinesColor = CONFIGURATIONS.numberLinesColor;
 
