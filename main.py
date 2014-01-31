@@ -2,15 +2,16 @@
 
 import sys
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QSizeGrip, QFont, QFontMetrics
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QSizeGrip, QFont, QFontMetrics, QMenu, QAction
 from PySide.QtCore import Qt
 
 
 class Ruler( QWidget ):
-    def __init__( self, parent= None ):
+    def __init__( self, appObject ):
 
-        super( Ruler, self ).__init__( parent )
+        super( Ruler, self ).__init__()
 
+        self.app_obj = appObject
         self.old_position = None    # is used for dragging of the window
 
         resize = QSizeGrip( self )
@@ -22,11 +23,15 @@ class Ruler( QWidget ):
         self.setLayout( layout )
 
             # main widget
+
+        self.setContextMenuPolicy( Qt.CustomContextMenu )
+        self.customContextMenuRequested.connect( self.constructContextMenu )
+
         self.setWindowTitle( 'Screen Ruler' )
         self.resize( 500, 50 )
         self.setWindowFlags( Qt.CustomizeWindowHint | Qt.FramelessWindowHint )   # Turns off the default window title hints
 
-            # set events
+
 
 
     def paintEvent(self, event):
@@ -141,12 +146,34 @@ class Ruler( QWidget ):
         print('key release')
 
 
+    def constructContextMenu( self, position ):
+        globalPosition = self.mapToGlobal( position )
+
+        menu = QMenu()
+
+        quitEntry = QAction( 'Quit', menu )
+        quitEntry.setData( self.quit )
+
+        menu.addAction( quitEntry )
+
+        selectedItem = menu.exec_( globalPosition )
+        """:type : QAction"""
+
+        if selectedItem:
+            selectedItem.data()()
+
+
+    def quit( self ):
+
+        self.app_obj.quit()
+
+
 
 if __name__ == '__main__':
 
     app = QApplication( sys.argv )
 
-    ruler = Ruler()
+    ruler = Ruler( app )
     ruler.show()
 
     app.exec_()
