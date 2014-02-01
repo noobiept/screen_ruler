@@ -8,6 +8,7 @@ from PySide.QtCore import Qt
 import color_button
 
 
+
 class Ruler( QWidget ):
     def __init__( self, appObject ):
 
@@ -17,6 +18,23 @@ class Ruler( QWidget ):
         self.about_window = None
         self.options_window = None
         self.old_position = None    # is used for dragging of the window
+        self.options = {
+                'units': 'px',
+                'always_above': False,
+                'horizontal_orientation': True,
+                'background_color': QColor( 222, 212, 33, 127 ),
+                'lines_color': QColor( 0, 0, 0, 255 ),
+
+                'ruler_width': 500,
+                'ruler_height': 50,
+                'ruler_position_x': -1, #HERE maybe its better if not saved?...
+                'ruler_position_y': -1, # -1 means to not force a specific position
+
+                'options_opened': False,
+                'options_position_x': -1,
+                'options_position_y': -1        #HERE same
+            }
+
 
         resize = QSizeGrip( self )
 
@@ -34,7 +52,6 @@ class Ruler( QWidget ):
         self.setWindowTitle( 'Screen Ruler' )
         self.resize( 500, 50 )
         self.setWindowFlags( Qt.CustomizeWindowHint | Qt.FramelessWindowHint )   # Turns off the default window title hints
-
 
 
 
@@ -81,6 +98,13 @@ class Ruler( QWidget ):
         fontMetrics = QFontMetrics( font )
 
         paint.begin( self )
+
+            # draw background
+        background = self.options[ 'background_color' ]
+        paint.fillRect( 0, 0, width, height, background )
+
+            # draw the lines
+        paint.setPen( self.options[ 'lines_color' ] )
         paint.setFont( font )
 
             # the builtin range() doesn't support floats
@@ -209,11 +233,19 @@ class Ruler( QWidget ):
         orientationGroup.addButton( vertical )
 
             # third column
-        backgroundColor = QColor( 222, 212, 33, 127 )
-        linesColor = QColor( 0, 0, 0, 255 )
+        backgroundColor = self.options[ 'background_color' ]
+        linesColor = self.options[ 'lines_color' ]
 
-        backgroundColorElement = color_button.ColorButton( optionsWindow, 'Background', backgroundColor )
-        linesColorElement = color_button.ColorButton( optionsWindow, 'Lines', linesColor )
+        def updateBackgroundColor( newColor ):
+            self.options[ 'background_color' ] = newColor
+            self.update()
+
+        def updateLinesColor( newColor ):
+            self.options[ 'lines_color' ] = newColor
+            self.update()
+
+        backgroundColorElement = color_button.ColorButton( optionsWindow, 'Background', backgroundColor, updateBackgroundColor )
+        linesColorElement = color_button.ColorButton( optionsWindow, 'Lines', linesColor, updateLinesColor )
         currentLength = QLabel( '0px' )
 
         layout = QGridLayout()
@@ -237,7 +269,6 @@ class Ruler( QWidget ):
         optionsWindow.show()
 
         self.options_window = optionsWindow
-
 
 
     def rotate( self ):

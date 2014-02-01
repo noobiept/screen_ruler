@@ -4,7 +4,10 @@ from PySide.QtGui import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog
 
 class ColorButton( QWidget ):
 
-    def __init__( self, parent, text: str, color: QColor ):
+    def __init__( self, parent, text: str, color: QColor, onChange ):
+        """
+            onChange( QColor ) : called when a color is chosen. Receives the new color as argument
+        """
 
         super( ColorButton, self ).__init__( parent )
 
@@ -27,6 +30,7 @@ class ColorButton( QWidget ):
 
         self.button = button
         self.color = color
+        self.on_change = onChange
 
         self.styleButton()
 
@@ -45,10 +49,13 @@ class ColorButton( QWidget ):
 
         colorDialog.show()
 
-        def colorSelected():
-            self.color = colorDialog.selectedColor()
+        def colorSelected( color ):
+            self.color = color
             self.styleButton()
 
-        colorDialog.colorSelected.connect( colorSelected )
+            if self.on_change:
+                self.on_change( self.color )
+
+        colorDialog.currentColorChanged.connect( colorSelected )
 
         self.color_dialog = colorDialog
