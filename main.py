@@ -2,8 +2,10 @@
 
 import sys
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QSizeGrip, QFont, QFontMetrics, QMenu, QAction
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QSizeGrip, QFont, QFontMetrics, QMenu, QAction, QLabel, QButtonGroup, QRadioButton, QCheckBox, QColorDialog, QColor, QPushButton
 from PySide.QtCore import Qt
+
+import color_button
 
 
 class Ruler( QWidget ):
@@ -12,6 +14,8 @@ class Ruler( QWidget ):
         super( Ruler, self ).__init__()
 
         self.app_obj = appObject
+        self.about_window = None
+        self.options_window = None
         self.old_position = None    # is used for dragging of the window
 
         resize = QSizeGrip( self )
@@ -151,9 +155,21 @@ class Ruler( QWidget ):
 
         menu = QMenu()
 
-        quitEntry = QAction( 'Quit', menu )
+        optionsEntry = QAction( 'Options', menu )
+        optionsEntry.setData( self.openOptions )
+
+        rotateEntry = QAction( 'Rotate', menu )
+        rotateEntry.setData( self.rotate )
+
+        aboutEntry = QAction( 'About', menu )
+        aboutEntry.setData( self.openAbout )
+
+        quitEntry = QAction( 'Close', menu )
         quitEntry.setData( self.quit )
 
+        menu.addAction( optionsEntry )
+        menu.addAction( rotateEntry )
+        menu.addAction( aboutEntry )
         menu.addAction( quitEntry )
 
         selectedItem = menu.exec_( globalPosition )
@@ -161,6 +177,94 @@ class Ruler( QWidget ):
 
         if selectedItem:
             selectedItem.data()()
+
+    def openOptions( self ):
+
+        optionsWindow = QWidget()
+        optionsWindow.setWindowTitle( 'Options' )
+
+            # first column
+        unitsGroup = QButtonGroup( optionsWindow )
+        pixels = QRadioButton( 'Pixels' )
+        centimeters = QRadioButton( 'Centimeters' )
+        inches = QRadioButton( 'Inches' )
+
+        pixels.setChecked( True )
+
+        unitsGroup.addButton( pixels )
+        unitsGroup.addButton( centimeters )
+        unitsGroup.addButton( inches )
+
+            # second column
+        alwaysAbove = QCheckBox( 'Always Above', optionsWindow )
+        alwaysAbove.setChecked( False )
+
+        orientationGroup = QButtonGroup( optionsWindow )
+        horizontal = QRadioButton( 'Horizontal' )
+        vertical = QRadioButton( 'Vertical' )
+
+        horizontal.setChecked( True )
+
+        orientationGroup.addButton( horizontal )
+        orientationGroup.addButton( vertical )
+
+            # third column
+        backgroundColor = QColor( 222, 212, 33, 127 )
+        linesColor = QColor( 0, 0, 0, 255 )
+
+        backgroundColorElement = color_button.ColorButton( optionsWindow, 'Background', backgroundColor )
+        linesColorElement = color_button.ColorButton( optionsWindow, 'Lines', linesColor )
+        currentLength = QLabel( '0px' )
+
+        layout = QGridLayout()
+
+            # first column
+        layout.addWidget( pixels, 0, 0 )
+        layout.addWidget( centimeters, 1, 0 )
+        layout.addWidget( inches, 2, 0 )
+
+            # second column
+        layout.addWidget( alwaysAbove, 0, 1 )
+        layout.addWidget( horizontal, 1, 1 )
+        layout.addWidget( vertical, 2, 1 )
+
+            # third column
+        layout.addWidget( backgroundColorElement, 0, 2 )
+        layout.addWidget( linesColorElement, 1, 2 )
+        layout.addWidget( currentLength, 2, 2 )
+
+        optionsWindow.setLayout( layout )
+        optionsWindow.show()
+
+        self.options_window = optionsWindow
+
+
+
+    def rotate( self ):
+        pass
+
+
+    def openAbout( self ):
+
+        aboutWindow = QWidget()
+        aboutWindow.setWindowTitle( 'About' )
+
+        textElement = QLabel(
+            "For more information, visit: bitbucket.org/drk4/screen_ruler\n\n"
+            "You can find there a wiki (with the documentation), and an issues tracker,\n"
+            "where you can write suggestions or problems with the application.\n\n"
+               "Thanks for using this program." )
+        textElement.setTextInteractionFlags( Qt.TextSelectableByMouse | Qt.TextSelectableByKeyboard )
+
+        layout = QGridLayout()
+
+        layout.addWidget( textElement )
+
+        aboutWindow.setLayout( layout )
+        aboutWindow.show()
+
+        self.about_window = aboutWindow
+
 
 
     def quit( self ):
