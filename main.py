@@ -2,7 +2,6 @@
 
 """
     - when resizing, don't move the ruler when it has reached the minimum width/height
-    - right sizegrip isn't position correctly
 """
 
 import sys
@@ -40,7 +39,6 @@ class Ruler( QWidget ):
             'options_position_y': -1        #HERE same
         }
 
-
             # main widget
 
         self.setContextMenuPolicy( Qt.CustomContextMenu )
@@ -50,24 +48,41 @@ class Ruler( QWidget ):
         self.resize( 500, 50 )
         self.setWindowFlags( Qt.CustomizeWindowHint | Qt.FramelessWindowHint )   # Turns off the default window title hints
 
-
         leftResize = size_grip.SizeGrip( self, True )
         rightResize = size_grip.SizeGrip( self, False )
 
-        layout = QGridLayout()
-        layout.setContentsMargins( 0, 0, 0, 0 )
-        layout.setSpacing( 0 )
-
-        layout.addWidget( leftResize, 0, 0, Qt.AlignTop | Qt.AlignLeft )
-        layout.addWidget( rightResize, 0, 1, Qt.AlignTop | Qt.AlignRight )
-
-        self.setLayout( layout )
+        self.left_resize = leftResize
+        self.right_resize = rightResize
 
 
+    def resizeEvent(self, event= None):
+        size = self.size()
+        width = size.width()
+        height = size.height()
+        leftResize = self.left_resize
+        rightResize = self.right_resize
+        length = leftResize.length
+
+        if self.options[ 'horizontal_orientation' ]:
+            rightResize.move( width - length, 0 )
+
+            leftResize.resize( length, height )
+            rightResize.resize( length, height )
+
+            # vertical orientation
+        else:
+            rightResize.move( 0, size.height() - rightResize.length )
+
+            leftResize.resize( width, length )
+            rightResize.resize( width, length )
 
 
 
     def paintEvent(self, event):
+
+        paint = QPainter()
+        paint.begin( self )
+        paint.save()
 
         size = self.size()
         width = size.width()
@@ -76,7 +91,7 @@ class Ruler( QWidget ):
 
             # depends on the unit
         proportion = 1  # 1 --> pixel
-        horizontalOrientation = True
+        horizontalOrientation = self.options[ 'horizontal_orientation' ]
 
         if horizontalOrientation:
 
@@ -86,6 +101,9 @@ class Ruler( QWidget ):
         else:   # vertical orientation
             rulerLength = height
             traceLengthLimit = width
+
+            paint.translate( width, 0 )
+            paint.rotate( 90 )
 
 
             # the length of the traces (lines)
@@ -104,16 +122,15 @@ class Ruler( QWidget ):
 
 
             # begin drawing
-        paint = QPainter()
+
         fontSize = 10
         font = QFont( 'Serif', fontSize )
         fontMetrics = QFontMetrics( font )
 
-        paint.begin( self )
 
             # draw background
         background = self.options[ 'background_color' ]
-        paint.fillRect( 0, 0, width, height, background )
+        paint.fillRect( 0, 0, rulerLength, traceLengthLimit, background )
 
             # draw the lines
         paint.setPen( self.options[ 'lines_color' ] )
@@ -153,6 +170,8 @@ class Ruler( QWidget ):
 
             paint.drawLine( a, 0, a, lineLength )
             paint.drawLine( a, traceLengthLimit, a,  traceLengthLimit - lineLength )
+
+        paint.restore()
         paint.end()
 
 
@@ -168,7 +187,7 @@ class Ruler( QWidget ):
         elif button == Qt.LeftButton:
             print('left button')
 
-        print( 'clicked' )
+
 
     def mouseMoveEvent( self, event ):
 
@@ -284,7 +303,13 @@ class Ruler( QWidget ):
 
 
     def rotate( self ):
-        pass
+        self.options[ 'horizontal_orientation' ] = not self.options[ 'horizontal_orientation' ]
+
+        size = self.size()
+
+            # switch the width/height (to rotate 90 degrees)
+        self.resize( size.height(), size.width() )
+        self.resizeEvent()
 
 
     def openAbout( self ):
@@ -300,7 +325,6 @@ class Ruler( QWidget ):
         textElement.setTextInteractionFlags( Qt.TextSelectableByMouse | Qt.TextSelectableByKeyboard )
 
         layout = QGridLayout()
-
         layout.addWidget( textElement )
 
         aboutWindow.setLayout( layout )

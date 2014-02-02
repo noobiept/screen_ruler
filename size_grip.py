@@ -1,29 +1,26 @@
 from PySide.QtGui import QPushButton
-from PySide.QtCore import Qt
+from PySide.QtCore import Qt, QEvent
 
 
 class SizeGrip( QPushButton ):
 
-    def __init__( self, parent, resizeLeft ):
+    def __init__( self, parent, left ):
 
         super( SizeGrip, self ).__init__( parent )
-
 
         self.setCursor( Qt.SizeAllCursor )
 
         self.parent = parent
         self.mouse_being_pressed = False
         self.previous_position = None
-        self.left = resizeLeft
+        self.length = 20
+        self.left = left
 
-    # def paintEvent(self, event):
+    def paintEvent(self, event):
         """
             Don't draw anything (transparent)
         """
-        # pass
-
-    def resizeEvent(self, event):
-        self.resize( 20, self.parent.size().height() )
+        pass
 
 
     def mousePressEvent( self, event ):
@@ -75,4 +72,5 @@ class SizeGrip( QPushButton ):
             self.mouse_being_pressed = False
 
         event.accept()
+
 
