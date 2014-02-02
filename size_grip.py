@@ -1,0 +1,78 @@
+from PySide.QtGui import QPushButton
+from PySide.QtCore import Qt
+
+
+class SizeGrip( QPushButton ):
+
+    def __init__( self, parent, resizeLeft ):
+
+        super( SizeGrip, self ).__init__( parent )
+
+
+        self.setCursor( Qt.SizeAllCursor )
+
+        self.parent = parent
+        self.mouse_being_pressed = False
+        self.previous_position = None
+        self.left = resizeLeft
+
+    # def paintEvent(self, event):
+        """
+            Don't draw anything (transparent)
+        """
+        # pass
+
+    def resizeEvent(self, event):
+        self.resize( 20, self.parent.size().height() )
+
+
+    def mousePressEvent( self, event ):
+
+        if event.button() == Qt.LeftButton:
+
+            self.mouse_being_pressed = True
+            self.previous_position = event.globalPos()
+
+                # don't propagate to the parent
+        event.accept()
+
+
+
+    def mouseMoveEvent(self, event):
+
+        if self.mouse_being_pressed:
+            mousePosition = event.globalPos()
+
+            size = self.parent.size()
+            currentWidth = size.width()
+            currentHeight = size.height()
+
+            parentPosition = self.parent.pos()
+            parentX = parentPosition.x()
+            parentY = parentPosition.y()
+
+            if self.left:
+                diffX = self.previous_position.x() - mousePosition.x()
+                diffY = self.previous_position.y() - mousePosition.y()
+
+                self.parent.move( parentX - diffX, parentY - diffY )
+                self.parent.resize( currentWidth + diffX, currentHeight + diffY )
+
+            else:
+                diffX = mousePosition.x() - self.previous_position.x()
+                diffY = mousePosition.y() - self.previous_position.y()
+
+                self.parent.resize( currentWidth + diffX, currentHeight + diffY )
+
+            self.previous_position = mousePosition
+
+            # don't propagate to the parent
+        event.accept()
+
+    def mouseReleaseEvent( self, event ):
+
+        if event.button() == Qt.LeftButton:
+            self.mouse_being_pressed = False
+
+        event.accept()
+

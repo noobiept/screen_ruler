@@ -1,11 +1,16 @@
 # python 3.3
 
+"""
+    - when resizing, don't move the ruler when it has reached the minimum width/height
+    - right sizegrip isn't position correctly
+"""
+
 import sys
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QSizeGrip, QFont, QFontMetrics, QMenu, QAction, QLabel, QButtonGroup, QRadioButton, QCheckBox, QColorDialog, QColor, QPushButton
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QButtonGroup, QRadioButton, QCheckBox, QColor
 from PySide.QtCore import Qt
 
-import color_button
+import color_button, size_grip
 
 
 
@@ -19,30 +24,22 @@ class Ruler( QWidget ):
         self.options_window = None
         self.old_position = None    # is used for dragging of the window
         self.options = {
-                'units': 'px',
-                'always_above': False,
-                'horizontal_orientation': True,
-                'background_color': QColor( 222, 212, 33, 127 ),
-                'lines_color': QColor( 0, 0, 0, 255 ),
+            'units': 'px',
+            'always_above': False,
+            'horizontal_orientation': True,
+            'background_color': QColor( 222, 212, 33, 127 ),
+            'lines_color': QColor( 0, 0, 0, 255 ),
 
-                'ruler_width': 500,
-                'ruler_height': 50,
-                'ruler_position_x': -1, #HERE maybe its better if not saved?...
-                'ruler_position_y': -1, # -1 means to not force a specific position
+            'ruler_width': 500,
+            'ruler_height': 50,
+            'ruler_position_x': -1, #HERE maybe its better if not saved?...
+            'ruler_position_y': -1, # -1 means to not force a specific position
 
-                'options_opened': False,
-                'options_position_x': -1,
-                'options_position_y': -1        #HERE same
-            }
+            'options_opened': False,
+            'options_position_x': -1,
+            'options_position_y': -1        #HERE same
+        }
 
-
-        resize = QSizeGrip( self )
-
-        layout = QGridLayout()
-
-        layout.addWidget( resize, 0, 0, Qt.AlignBottom | Qt.AlignLeft )
-
-        self.setLayout( layout )
 
             # main widget
 
@@ -52,6 +49,21 @@ class Ruler( QWidget ):
         self.setWindowTitle( 'Screen Ruler' )
         self.resize( 500, 50 )
         self.setWindowFlags( Qt.CustomizeWindowHint | Qt.FramelessWindowHint )   # Turns off the default window title hints
+
+
+        leftResize = size_grip.SizeGrip( self, True )
+        rightResize = size_grip.SizeGrip( self, False )
+
+        layout = QGridLayout()
+        layout.setContentsMargins( 0, 0, 0, 0 )
+        layout.setSpacing( 0 )
+
+        layout.addWidget( leftResize, 0, 0, Qt.AlignTop | Qt.AlignLeft )
+        layout.addWidget( rightResize, 0, 1, Qt.AlignTop | Qt.AlignRight )
+
+        self.setLayout( layout )
+
+
 
 
 
@@ -284,7 +296,7 @@ class Ruler( QWidget ):
             "For more information, visit: bitbucket.org/drk4/screen_ruler\n\n"
             "You can find there a wiki (with the documentation), and an issues tracker,\n"
             "where you can write suggestions or problems with the application.\n\n"
-               "Thanks for using this program." )
+            "Thanks for using this program." )
         textElement.setTextInteractionFlags( Qt.TextSelectableByMouse | Qt.TextSelectableByKeyboard )
 
         layout = QGridLayout()
