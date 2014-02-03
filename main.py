@@ -46,7 +46,12 @@ class Ruler( QWidget ):
 
         self.setWindowTitle( 'Screen Ruler' )
         self.resize( 500, 50 )
-        self.setWindowFlags( Qt.CustomizeWindowHint | Qt.FramelessWindowHint )   # Turns off the default window title hints
+
+        windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
+
+        if self.options[ 'always_above' ]:
+            windowFlags = windowFlags | Qt.WindowStaysOnTopHint
+        self.setWindowFlags( windowFlags )   # Turns off the default window title hints
 
         leftResize = size_grip.SizeGrip( self, True )
         rightResize = size_grip.SizeGrip( self, False )
@@ -252,7 +257,23 @@ class Ruler( QWidget ):
 
             # second column
         alwaysAbove = QCheckBox( 'Always Above', optionsWindow )
-        alwaysAbove.setChecked( False )
+        alwaysAbove.setChecked( self.options[ 'always_above' ] )
+
+        def alwaysAboveSetting():
+
+            if alwaysAbove.isChecked():
+
+                self.options[ 'always_above' ] = True
+                self.setWindowFlags( self.windowFlags() | Qt.WindowStaysOnTopHint )
+
+            else:
+                self.options[ 'always_above' ] = False
+                self.setWindowFlags( self.windowFlags() & ~Qt.WindowStaysOnTopHint )
+
+            self.show()
+
+
+        alwaysAbove.clicked.connect( alwaysAboveSetting )
 
         orientationGroup = QButtonGroup( optionsWindow )
         horizontal = QRadioButton( 'Horizontal' )
