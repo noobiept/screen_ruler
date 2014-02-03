@@ -1,5 +1,5 @@
 from PySide.QtGui import QPushButton
-from PySide.QtCore import Qt, QEvent
+from PySide.QtCore import Qt
 
 
 class SizeGrip( QPushButton ):
@@ -15,6 +15,7 @@ class SizeGrip( QPushButton ):
         self.previous_position = None
         self.length = 20
         self.left = left
+        self.setMouseTracking( True )
 
     def paintEvent(self, event):
         """
@@ -63,8 +64,11 @@ class SizeGrip( QPushButton ):
 
             self.previous_position = mousePosition
 
-            # don't propagate to the parent
-        event.accept()
+            # propagate the event to the parent widget, but identify we're on top of the SizeGrip (so that we don't move and resize at the same time if we press left click)
+            # this is done so that the current length (from the beginning of the ruler to the mouse position) can be shown on the options window, even when the mouse is on top of a SizeGrip
+        self.parent.mouseMoveEvent( event, True )
+
+
 
     def mouseReleaseEvent( self, event ):
 

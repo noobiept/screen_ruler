@@ -6,10 +6,10 @@
 
 import sys
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QButtonGroup, QRadioButton, QCheckBox, QColor
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor
 from PySide.QtCore import Qt
 
-import color_button, size_grip
+import size_grip, options_window
 
 
 
@@ -22,6 +22,8 @@ class Ruler( QWidget ):
         self.about_window = None
         self.options_window = None
         self.old_position = None    # is used for dragging of the window
+        self.setMinimumWidth( 50 )
+        self.setMinimumHeight( 50 )
         self.options = {
             'units': 'px',
             'always_above': False,
@@ -46,6 +48,7 @@ class Ruler( QWidget ):
 
         self.setWindowTitle( 'Screen Ruler' )
         self.resize( 500, 50 )
+        self.setMouseTracking( True )
 
         windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
 
@@ -147,17 +150,16 @@ class Ruler( QWidget ):
                 yield current
                 current += step
 
-        for a in float_range( 0, limit, step ):
+            # we skip 0 and start in the first step, since there's no point in drawing the first line/text (it would appear cut off, since we're at the limit)
+        for a in float_range( step, limit, step ):
 
             if (a % 100) == 0:
                 lineLength = large
 
-                    # don't draw the text for the first one (since its going to be cut anyway)
-                if a != 0:
-                    text = '{}{}'.format( str( a ), units )
-                    textWidth = fontMetrics.width( text )
+                text = '{}{}'.format( str( a ), units )
+                textWidth = fontMetrics.width( text )
 
-                    paint.drawText( a - textWidth / 2, traceLengthLimit / 2 + fontSize / 2, text )
+                paint.drawText( a - textWidth / 2, traceLengthLimit / 2 + fontSize / 2, text )
 
             elif (a % 50) == 0:
                 lineLength = large
@@ -194,14 +196,33 @@ class Ruler( QWidget ):
 
 
 
-    def mouseMoveEvent( self, event ):
+    def mouseMoveEvent( self, event, fromSizeGrip= False ):
 
-        position = event.globalPos()
-        diff = position - self.old_position
+        buttons = event.buttons()
 
-        self.move( self.x() + diff.x(), self.y() + diff.y() )
+            # if we're on top of a SizeGrip, then clicking means we're resizing, and not moving the ruler
+        if not fromSizeGrip and (buttons & Qt.LeftButton):
 
-        self.old_position = position
+            position = event.globalPos()
+            diff = position - self.old_position
+
+            self.move( self.x() + diff.x(), self.y() + diff.y() )
+
+            self.old_position = position
+
+
+        if self.options_window:
+            pos = self.pos()
+
+            if self.options[ 'horizontal_orientation' ]:
+                distance = event.globalX() - pos.x()
+
+
+            else:
+                distance = event.globalY() - pos.y()
+
+            self.options_window.setCurrentLength( '{}px'.format( distance ) )  #HERE have with different units
+
 
     def keyPressEvent(self, *args, **kwargs):
         print('key pressed')
@@ -240,90 +261,26 @@ class Ruler( QWidget ):
 
     def openOptions( self ):
 
-        optionsWindow = QWidget()
-        optionsWindow.setWindowTitle( 'Options' )
+            # already opened
+        if self.options_window:
+            return
 
-            # first column
-        unitsGroup = QButtonGroup( optionsWindow )
-        pixels = QRadioButton( 'Pixels' )
-        centimeters = QRadioButton( 'Centimeters' )
-        inches = QRadioButton( 'Inches' )
+        optionsWindow = options_window.OptionsWindow( self )
 
-        pixels.setChecked( True )
+            # reset the self.options_window variable, to tell when the options window is opened or not
+        def closedOptionsWindow( event ):
+            self.options_window = None
 
-        unitsGroup.addButton( pixels )
-        unitsGroup.addButton( centimeters )
-        unitsGroup.addButton( inches )
-
-            # second column
-        alwaysAbove = QCheckBox( 'Always Above', optionsWindow )
-        alwaysAbove.setChecked( self.options[ 'always_above' ] )
-
-        def alwaysAboveSetting():
-
-            if alwaysAbove.isChecked():
-
-                self.options[ 'always_above' ] = True
-                self.setWindowFlags( self.windowFlags() | Qt.WindowStaysOnTopHint )
-
-            else:
-                self.options[ 'always_above' ] = False
-                self.setWindowFlags( self.windowFlags() & ~Qt.WindowStaysOnTopHint )
-
-            self.show()
+            event.accept()
 
 
-        alwaysAbove.clicked.connect( alwaysAboveSetting )
-
-        orientationGroup = QButtonGroup( optionsWindow )
-        horizontal = QRadioButton( 'Horizontal' )
-        vertical = QRadioButton( 'Vertical' )
-
-        horizontal.setChecked( True )
-
-        orientationGroup.addButton( horizontal )
-        orientationGroup.addButton( vertical )
-
-            # third column
-        backgroundColor = self.options[ 'background_color' ]
-        linesColor = self.options[ 'lines_color' ]
-
-        def updateBackgroundColor( newColor ):
-            self.options[ 'background_color' ] = newColor
-            self.update()
-
-        def updateLinesColor( newColor ):
-            self.options[ 'lines_color' ] = newColor
-            self.update()
-
-        backgroundColorElement = color_button.ColorButton( optionsWindow, 'Background', backgroundColor, updateBackgroundColor )
-        linesColorElement = color_button.ColorButton( optionsWindow, 'Lines', linesColor, updateLinesColor )
-        currentLength = QLabel( '0px' )
-
-        layout = QGridLayout()
-
-            # first column
-        layout.addWidget( pixels, 0, 0 )
-        layout.addWidget( centimeters, 1, 0 )
-        layout.addWidget( inches, 2, 0 )
-
-            # second column
-        layout.addWidget( alwaysAbove, 0, 1 )
-        layout.addWidget( horizontal, 1, 1 )
-        layout.addWidget( vertical, 2, 1 )
-
-            # third column
-        layout.addWidget( backgroundColorElement, 0, 2 )
-        layout.addWidget( linesColorElement, 1, 2 )
-        layout.addWidget( currentLength, 2, 2 )
-
-        optionsWindow.setLayout( layout )
-        optionsWindow.show()
+        optionsWindow.closeEvent = closedOptionsWindow
 
         self.options_window = optionsWindow
 
 
     def rotate( self ):
+
         self.options[ 'horizontal_orientation' ] = not self.options[ 'horizontal_orientation' ]
 
         size = self.size()
@@ -331,6 +288,11 @@ class Ruler( QWidget ):
             # switch the width/height (to rotate 90 degrees)
         self.resize( size.height(), size.width() )
         self.resizeEvent()
+
+            # if the options window is opened, update it
+        if self.options_window:
+            self.options_window.updateOrientation( self.options[ 'horizontal_orientation' ] )
+
 
 
     def openAbout( self ):
