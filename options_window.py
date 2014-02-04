@@ -1,6 +1,6 @@
 # python 3.3
 
-from PySide.QtGui import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout
+from PySide.QtGui import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout
 from PySide.QtCore import Qt
 
 import color_button
@@ -15,14 +15,38 @@ class OptionsWindow( QWidget ):
             # first column (units)
         unitsGroup = QButtonGroup( self )
         pixels = QRadioButton( 'Pixels' )
+        pixels.unit = 'px'
         centimeters = QRadioButton( 'Centimeters' )
+        centimeters.unit = 'cm'
         inches = QRadioButton( 'Inches' )
+        inches.unit = 'inch'
 
-        pixels.setChecked( True )
+        selectedUnit = rulerObject.options[ 'units' ]
+
+        if selectedUnit == 'cm':
+            centimeters.setChecked( True )
+
+        elif selectedUnit == 'inch':
+            inches.setChecked( True )
+
+        else:
+            pixels.setChecked( True )
 
         unitsGroup.addButton( pixels )
         unitsGroup.addButton( centimeters )
         unitsGroup.addButton( inches )
+
+        def changeUnits( radioButton ):
+            nonlocal selectedUnit
+            newUnit = radioButton.unit
+
+            if newUnit != selectedUnit:
+                rulerObject.options[ 'units' ] = newUnit
+                selectedUnit = newUnit
+                rulerObject.update()
+
+
+        unitsGroup.buttonClicked.connect( changeUnits )
 
             # second column (always above + orientation)
         alwaysAbove = QCheckBox( 'Always Above', self )
@@ -93,6 +117,7 @@ class OptionsWindow( QWidget ):
         currentLength.setAlignment( Qt.AlignCenter )
 
         layout = QGridLayout()
+        layout.setSpacing( 5 )
 
             # first column
         layout.addWidget( pixels, 0, 0 )
@@ -110,6 +135,7 @@ class OptionsWindow( QWidget ):
         layout.addWidget( currentLength, 2, 2 )
 
         self.setLayout( layout )
+        self.layout().setSizeConstraint( QLayout.SetFixedSize )
         self.show()
 
         self.current_length = currentLength
@@ -124,7 +150,7 @@ class OptionsWindow( QWidget ):
 
 
     def updateOrientation( self, isHorizontal ):
-        
+
         if isHorizontal:
             self.horizontal.setChecked( True )
             self.selected_orientation = self.horizontal_string

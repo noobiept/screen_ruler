@@ -2,6 +2,9 @@
 
 """
     - when resizing, don't move the ruler when it has reached the minimum width/height
+
+    - the proportion is not well calculated for centimeters in windows (you get wrong values for .widthMM() call)
+        - works fine in linux though
 """
 
 import sys
@@ -25,7 +28,7 @@ class Ruler( QWidget ):
         self.setMinimumWidth( 50 )
         self.setMinimumHeight( 50 )
         self.options = {
-            'units': 'px',
+            'units': 'px',      # px / cm / inch
             'always_above': False,
             'horizontal_orientation': True,
             'background_color': QColor( 222, 212, 33, 127 ),
@@ -95,10 +98,10 @@ class Ruler( QWidget ):
         size = self.size()
         width = size.width()
         height = size.height()
-        units = 'px'    # pixels
+        units = self.options[ 'units' ]
 
-            # depends on the unit
-        proportion = 1  # 1 --> pixel
+        proportion = self.getProportion()
+
         horizontalOrientation = self.options[ 'horizontal_orientation' ]
 
         if horizontalOrientation:
@@ -153,13 +156,19 @@ class Ruler( QWidget ):
             # we skip 0 and start in the first step, since there's no point in drawing the first line/text (it would appear cut off, since we're at the limit)
         for a in float_range( step, limit, step ):
 
+            position = a * proportion
+
             if (a % 100) == 0:
                 lineLength = large
 
-                text = '{}{}'.format( str( a ), units )
+                if units == 'px':
+                    text = '{}{}'.format( str( a ), units )
+                else:
+                    text = '{}{}'.format( str( int(a / 100) ), units )
+
                 textWidth = fontMetrics.width( text )
 
-                paint.drawText( a - textWidth / 2, traceLengthLimit / 2 + fontSize / 2, text )
+                paint.drawText( position - textWidth / 2, traceLengthLimit / 2 + fontSize / 2, text )
 
             elif (a % 50) == 0:
                 lineLength = large
@@ -175,8 +184,8 @@ class Ruler( QWidget ):
                 lineLength = small
 
 
-            paint.drawLine( a, 0, a, lineLength )
-            paint.drawLine( a, traceLengthLimit, a,  traceLengthLimit - lineLength )
+            paint.drawLine( position, 0, position, lineLength )
+            paint.drawLine( position, traceLengthLimit, position, traceLengthLimit - lineLength )
 
         paint.restore()
         paint.end()
@@ -221,7 +230,19 @@ class Ruler( QWidget ):
             else:
                 distance = event.globalY() - pos.y()
 
-            self.options_window.setCurrentLength( '{}px'.format( distance ) )  #HERE have with different units
+
+            unit = self.options[ 'units' ]
+
+            if unit != 'px':
+                distance /= 100
+                value = distance / self.getProportion()
+                string = '{:.2f} {}'
+
+            else:
+                value = distance    # its already in pixels
+                string = '{} {}'
+
+            self.options_window.setCurrentLength( string.format( value, unit ) )
 
 
     def keyPressEvent(self, *args, **kwargs):
@@ -314,6 +335,28 @@ class Ruler( QWidget ):
         aboutWindow.show()
 
         self.about_window = aboutWindow
+
+
+    def getProportion( self ):
+        units = self.options[ 'units' ]
+
+        if units == 'cm':
+                # 1 mm -> something pixel
+                # width mm -> width pixel
+            pxToMm = 1 * self.width() / self.widthMM()
+            proportion = pxToMm / 10    # from mm to cm
+
+        elif units == 'inch':
+                # we'll calculate from mm to inches
+            pxToMm = 1 * self.width() / self.widthMM()
+
+                # 1 inch 2.54 cm
+            proportion = 0.254 * pxToMm
+
+        else:   # pixels
+            proportion = 1
+
+        return proportion
 
 
 

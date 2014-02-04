@@ -1,6 +1,7 @@
 # python 3.3
 
 from PySide.QtGui import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog, QColor
+from PySide.QtCore import QMargins
 
 class ColorButton( QWidget ):
 
@@ -16,9 +17,11 @@ class ColorButton( QWidget ):
 
             # elements
         button = QPushButton()
+        button.setFixedWidth( 50 )
         label = QLabel( text )
 
         layout = QGridLayout()
+        layout.setContentsMargins( QMargins( 0, 0, 0, 0 ) )
 
         layout.addWidget( label, 0, 0 )
         layout.addWidget( button, 0, 1 )
