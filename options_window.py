@@ -57,13 +57,13 @@ class OptionsWindow( QWidget ):
             if alwaysAbove.isChecked():
 
                 rulerObject.options[ 'always_above' ] = True
-                rulerObject.setWindowFlags( self.windowFlags() | Qt.WindowStaysOnTopHint )
+                rulerObject.setWindowFlags( rulerObject.windowFlags() | Qt.WindowStaysOnTopHint )
 
             else:
                 rulerObject.options[ 'always_above' ] = False
-                rulerObject.setWindowFlags( self.windowFlags() & ~Qt.WindowStaysOnTopHint )
+                rulerObject.setWindowFlags( rulerObject.windowFlags() & ~Qt.WindowStaysOnTopHint )
 
-            self.show()
+            rulerObject.show()
 
 
         alwaysAbove.clicked.connect( alwaysAboveSetting )
@@ -134,8 +134,9 @@ class OptionsWindow( QWidget ):
         layout.addWidget( linesColorElement, 1, 2 )
         layout.addWidget( currentLength, 2, 2 )
 
+        layout.setSizeConstraint( QLayout.SetFixedSize )
         self.setLayout( layout )
-        self.layout().setSizeConstraint( QLayout.SetFixedSize )
+
         self.show()
 
         self.current_length = currentLength
@@ -158,3 +159,9 @@ class OptionsWindow( QWidget ):
         else:
             self.vertical.setChecked( True )
             self.selected_orientation = self.vertical_string
+
+
+    def keyPressEvent( self, event ):
+
+        if event.key() == Qt.Key_Escape:
+            self.close()

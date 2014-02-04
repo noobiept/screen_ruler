@@ -5,11 +5,15 @@
 
     - the proportion is not well calculated for centimeters in windows (you get wrong values for .widthMM() call)
         - works fine in linux though
+
+    - save/load the configurations to an external file
+    - transparency of the background (need to apply to the main window, not just in rgba())
+    - when rotating, move the ruler so that it appears on top of the mouse (or if pressed from the menu appear on the center of screen?...)
 """
 
 import sys
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout
 from PySide.QtCore import Qt
 
 import size_grip, options_window
@@ -17,11 +21,10 @@ import size_grip, options_window
 
 
 class Ruler( QWidget ):
-    def __init__( self, appObject ):
+    def __init__( self ):
 
         super( Ruler, self ).__init__()
 
-        self.app_obj = appObject
         self.about_window = None
         self.options_window = None
         self.old_position = None    # is used for dragging of the window
@@ -197,12 +200,8 @@ class Ruler( QWidget ):
 
         button = event.button()
 
-        if button == Qt.RightButton:
-            print('right button')
-
-        elif button == Qt.LeftButton:
-            print('left button')
-
+        if button == Qt.MidButton:
+            self.rotate()
 
 
     def mouseMoveEvent( self, event, fromSizeGrip= False ):
@@ -245,11 +244,16 @@ class Ruler( QWidget ):
             self.options_window.setCurrentLength( string.format( value, unit ) )
 
 
-    def keyPressEvent(self, *args, **kwargs):
-        print('key pressed')
+    def keyPressEvent( self, event ):
 
-    def keyReleaseEvent(self, *args, **kwargs):
-        print('key release')
+        key = event.key()
+        modifiers = event.modifiers()
+
+        if key == Qt.Key_O and modifiers == Qt.AltModifier:
+            self.openOptions()
+
+        elif key == Qt.Key_R and modifiers == Qt.AltModifier:
+            self.rotate()
 
 
     def constructContextMenu( self, position ):
@@ -284,6 +288,8 @@ class Ruler( QWidget ):
 
             # already opened
         if self.options_window:
+            self.options_window.raise_()
+            self.options_window.activateWindow()
             return
 
         optionsWindow = options_window.OptionsWindow( self )
@@ -318,6 +324,12 @@ class Ruler( QWidget ):
 
     def openAbout( self ):
 
+            # already opened
+        if self.about_window:
+            self.about_window.raise_()
+            self.about_window.activateWindow()
+            return
+
         aboutWindow = QWidget()
         aboutWindow.setWindowTitle( 'About' )
 
@@ -330,9 +342,25 @@ class Ruler( QWidget ):
 
         layout = QGridLayout()
         layout.addWidget( textElement )
+        layout.setSizeConstraint( QLayout.SetFixedSize )
 
         aboutWindow.setLayout( layout )
+
+        def keyPress( event ):
+
+            if event.key() == Qt.Key_Escape:
+                aboutWindow.close()
+
+        aboutWindow.keyPressEvent = keyPress
         aboutWindow.show()
+
+            # reset the self.about_window variable, to tell when the about window is opened or not
+        def closedAboutWindow( event ):
+            self.about_window = None
+
+            event.accept()
+
+        aboutWindow.closeEvent = closedAboutWindow
 
         self.about_window = aboutWindow
 
@@ -362,7 +390,7 @@ class Ruler( QWidget ):
 
     def quit( self ):
 
-        self.app_obj.quit()
+        QApplication.quit()
 
 
 
@@ -370,7 +398,7 @@ if __name__ == '__main__':
 
     app = QApplication( sys.argv )
 
-    ruler = Ruler( app )
+    ruler = Ruler()
     ruler.show()
 
     app.exec_()
