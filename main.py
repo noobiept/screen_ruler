@@ -7,13 +7,11 @@
         - works fine in linux though
 
     - save/load the configurations to an external file
-    - transparency of the background (need to apply to the main window, not just in rgba())
-    - when rotating, move the ruler so that it appears on top of the mouse (or if pressed from the menu appear on the center of screen?...)
 """
 
 import sys
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout, QCursor
 from PySide.QtCore import Qt
 
 import size_grip, options_window
@@ -34,7 +32,7 @@ class Ruler( QWidget ):
             'units': 'px',      # px / cm / inch
             'always_above': False,
             'horizontal_orientation': True,
-            'background_color': QColor( 222, 212, 33, 127 ),
+            'background_color': QColor( 222, 212, 33, 210 ),
             'lines_color': QColor( 0, 0, 0, 255 ),
 
             'ruler_width': 500,
@@ -55,6 +53,7 @@ class Ruler( QWidget ):
         self.setWindowTitle( 'Screen Ruler' )
         self.resize( 500, 50 )
         self.setMouseTracking( True )
+        self.setAttribute( Qt.WA_TranslucentBackground, True )
 
         windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
 
@@ -201,7 +200,7 @@ class Ruler( QWidget ):
         button = event.button()
 
         if button == Qt.MidButton:
-            self.rotate()
+            self.rotate( QCursor.pos() )
 
 
     def mouseMoveEvent( self, event, fromSizeGrip= False ):
@@ -253,7 +252,7 @@ class Ruler( QWidget ):
             self.openOptions()
 
         elif key == Qt.Key_R and modifiers == Qt.AltModifier:
-            self.rotate()
+            self.rotate( QCursor.pos() )
 
 
     def constructContextMenu( self, position ):
@@ -264,8 +263,13 @@ class Ruler( QWidget ):
         optionsEntry = QAction( 'Options', menu )
         optionsEntry.setData( self.openOptions )
 
+        def rotate():
+            mousePosition = QCursor.pos()
+
+            self.rotate( mousePosition )
+
         rotateEntry = QAction( 'Rotate', menu )
-        rotateEntry.setData( self.rotate )
+        rotateEntry.setData( rotate )
 
         aboutEntry = QAction( 'About', menu )
         aboutEntry.setData( self.openAbout )
@@ -306,14 +310,27 @@ class Ruler( QWidget ):
         self.options_window = optionsWindow
 
 
-    def rotate( self ):
+    def rotate( self, mousePosition= None ):
 
         self.options[ 'horizontal_orientation' ] = not self.options[ 'horizontal_orientation' ]
 
         size = self.size()
 
+            # position the ruler so that the resulting rotation is based on where the mouse is
+        if mousePosition:
+            rulerX = self.x()
+            rulerY = self.y()
+            mouseX = mousePosition.x()
+            mouseY = mousePosition.y()
+
+            self.move( mouseX - (mouseY - rulerY), mouseY - (mouseX - rulerX) )
+
+
             # switch the width/height (to rotate 90 degrees)
         self.resize( size.height(), size.width() )
+
+
+
         self.resizeEvent()
 
             # if the options window is opened, update it

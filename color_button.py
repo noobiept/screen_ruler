@@ -47,7 +47,7 @@ class ColorButton( QWidget ):
 
     def onClick( self ):
 
-        colorDialog = QColorDialog()
+        colorDialog = QColorDialog( self.color )
         colorDialog.setOption( QColorDialog.ShowAlphaChannel )
 
         colorDialog.show()
