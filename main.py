@@ -2,17 +2,17 @@
 
 """
     - when resizing, don't move the ruler when it has reached the minimum width/height
+        - happens on the left SizeGrip, since we're moving it when resizing
+        - difficult to know when .resize() isn't resizing
 
-    - the proportion is not well calculated for centimeters in windows (you get wrong values for .widthMM() call)
+    - the proportion is not well calculated for centimeters/inches in windows (you get wrong values for .widthMM() call)
         - works fine in linux though
-
-    - save/load the position in the screen of the ruler/options ?..
 """
 
 import sys
 import json
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout, QCursor
+from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout, QCursor, QStyle
 from PySide.QtCore import Qt
 
 import size_grip, options_window
@@ -38,12 +38,7 @@ class Ruler( QWidget ):
 
             'ruler_width': 500,
             'ruler_height': 50,
-            'ruler_position_x': -1, #HERE maybe its better if not saved?...
-            'ruler_position_y': -1, # -1 means to not force a specific position
-
-            'options_opened': False,
-            'options_position_x': -1,
-            'options_position_y': -1        #HERE same
+            'options_opened': False
             }
 
            # load the options
@@ -58,6 +53,12 @@ class Ruler( QWidget ):
         self.resize( self.options[ 'ruler_width' ], self.options[ 'ruler_height' ] )
         self.setMouseTracking( True )
         self.setAttribute( Qt.WA_TranslucentBackground, True )
+        self.setGeometry( QStyle.alignedRect(
+                Qt.LeftToRight,
+                Qt.AlignCenter,
+                self.size(),
+                QApplication.desktop().availableGeometry()
+            ))
 
         windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
 
@@ -361,7 +362,7 @@ class Ruler( QWidget ):
 
         textElement = QLabel(
             "For more information, visit: bitbucket.org/drk4/screen_ruler\n\n"
-            "You can find there a wiki (with the documentation), and an issues tracker,\n"
+            "You can find there a readme (with the documentation), the source code, and an issues tracker,\n"
             "where you can write suggestions or problems with the application.\n\n"
             "Thanks for using this program." )
         textElement.setTextInteractionFlags( Qt.TextSelectableByMouse | Qt.TextSelectableByKeyboard )
