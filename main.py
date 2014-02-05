@@ -6,10 +6,11 @@
     - the proportion is not well calculated for centimeters in windows (you get wrong values for .widthMM() call)
         - works fine in linux though
 
-    - save/load the configurations to an external file
+    - save/load the position in the screen of the ruler/options ?..
 """
 
 import sys
+import json
 
 from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout, QCursor
 from PySide.QtCore import Qt
@@ -43,7 +44,10 @@ class Ruler( QWidget ):
             'options_opened': False,
             'options_position_x': -1,
             'options_position_y': -1        #HERE same
-        }
+            }
+
+           # load the options
+        self.load()
 
             # main widget
 
@@ -51,21 +55,26 @@ class Ruler( QWidget ):
         self.customContextMenuRequested.connect( self.constructContextMenu )
 
         self.setWindowTitle( 'Screen Ruler' )
-        self.resize( 500, 50 )
+        self.resize( self.options[ 'ruler_width' ], self.options[ 'ruler_height' ] )
         self.setMouseTracking( True )
         self.setAttribute( Qt.WA_TranslucentBackground, True )
 
         windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
-
-        if self.options[ 'always_above' ]:
-            windowFlags = windowFlags | Qt.WindowStaysOnTopHint
-        self.setWindowFlags( windowFlags )   # Turns off the default window title hints
 
         leftResize = size_grip.SizeGrip( self, True )
         rightResize = size_grip.SizeGrip( self, False )
 
         self.left_resize = leftResize
         self.right_resize = rightResize
+
+
+        if self.options[ 'always_above' ]:
+            windowFlags = windowFlags | Qt.WindowStaysOnTopHint
+        self.setWindowFlags( windowFlags )   # Turns off the default window title hints
+
+        if self.options[ 'options_opened' ]:
+            self.openOptions()
+
 
 
     def resizeEvent(self, event= None):
@@ -404,10 +413,83 @@ class Ruler( QWidget ):
         return proportion
 
 
+    def save( self ):
+            # need to get the individual rgba() from the QColor so that we can serialize it into json
+        background = self.options[ 'background_color' ]
+        lines = self.options[ 'lines_color' ]
+
+        self.options[ 'background_color' ] = {
+                'red': background.red(),
+                'green': background.green(),
+                'blue': background.blue(),
+                'alpha': background.alpha()
+            }
+
+        self.options[ 'lines_color' ] = {
+                'red': lines.red(),
+                'green': lines.green(),
+                'blue': lines.blue(),
+                'alpha': lines.alpha()
+            }
+
+        self.options[ 'ruler_width' ] = self.width()
+        self.options[ 'ruler_height' ] = self.height()
+
+        options = json.dumps( self.options )
+
+        with open( 'config.txt', 'w', encoding= 'utf-8' ) as f:
+            f.write( options )
+
+
+    def load( self ):
+
+        try:
+            with open( 'config.txt', 'r', encoding= 'utf-8' ) as f:
+                try:
+                    options = json.load( f )
+
+                except ValueError:
+                    return
+
+
+                for key, value in options.items():
+                    self.options[ key ] = value
+
+                    # deal with the colors (init. the QColor() from)
+                backgroundColor = self.options[ 'background_color' ]
+                linesColor = self.options[ 'lines_color' ]
+
+                if isinstance( backgroundColor, dict ):
+                    self.options[ 'background_color' ] = QColor(
+                            backgroundColor[ 'red' ],
+                            backgroundColor[ 'green' ],
+                            backgroundColor[ 'blue' ],
+                            backgroundColor[ 'alpha' ]
+                        )
+
+                if isinstance( linesColor, dict ):
+                    self.options[ 'lines_color' ] = QColor(
+                            linesColor[ 'red' ],
+                            linesColor[ 'green' ],
+                            linesColor[ 'blue' ],
+                            linesColor[ 'alpha' ]
+                        )
+        except FileNotFoundError:
+            return
+
 
     def quit( self ):
 
-        QApplication.quit()
+        if self.options_window:
+            self.options[ 'options_opened' ] = True
+            self.options_window.close()
+        else:
+            self.options[ 'options_opened' ] = False
+
+        if self.about_window:
+            self.about_window.close()
+
+        self.close()
 
 
 
@@ -418,4 +500,8 @@ if __name__ == '__main__':
     ruler = Ruler()
     ruler.show()
 
+    def saveOnQuit():
+        ruler.save()
+
+    app.lastWindowClosed.connect( saveOnQuit )
     app.exec_()
