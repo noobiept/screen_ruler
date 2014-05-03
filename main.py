@@ -481,6 +481,11 @@ class Ruler( QWidget ):
 
     def quit( self ):
 
+        self.close()
+
+
+    def closeEvent( self, event ):
+
         if self.options_window:
             self.options[ 'options_opened' ] = True
             self.options_window.close()
@@ -490,8 +495,9 @@ class Ruler( QWidget ):
         if self.about_window:
             self.about_window.close()
 
-        self.close()
+        self.save()
 
+        event.accept()
 
 
 if __name__ == '__main__':
@@ -501,8 +507,4 @@ if __name__ == '__main__':
     ruler = Ruler()
     ruler.show()
 
-    def saveOnQuit():
-        ruler.save()
-
-    app.lastWindowClosed.connect( saveOnQuit )
     app.exec_()
