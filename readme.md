@@ -22,7 +22,7 @@ Dependencies:
 * [PySide2](https://wiki.qt.io/Qt_for_Python)
 
 - `brew install pyside`
-- `python3 main.py` to run.
+- `python3 source/main.py` to run.
 
 
 # Keyboard shortcuts #
@@ -36,6 +36,3 @@ Ruler window:
 Options/about window:
 
 * esc key --> closes the window
-
-
-
