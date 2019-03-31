@@ -21,7 +21,7 @@ Dependencies:
 * [Python3](http://python.org)
 * [PySide2](https://wiki.qt.io/Qt_for_Python)
 
-- `brew install pyside`
+- `pip3 install -r requirements.txt` or `brew install pyside`
 - `python3 source/main.py` to run.
 
 
