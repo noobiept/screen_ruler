@@ -1,0 +1,25 @@
+image: python:3.7
+pipelines:
+    default:
+        - step:
+            script:
+                # install dependencies
+                - apt-get update
+                - apt-get --yes install zip
+                - apt-get --yes install jq
+                - pip3 install -r requirements.txt
+
+                # run some checks
+                - autopep8 --diff --recursive --exit-code source/
+
+                # get the current name/version of the project
+                - NAME=$(cat package.json | jq -er '.name')
+                - VERSION=$(cat package.json | jq -er '.version')
+
+                # zip the output
+                - pushd "./source"
+                - zip -r "../$NAME $VERSION.zip" *
+                - popd
+
+                # upload to the 'downloads' section of the bitbucket project
+                - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/screen_ruler/downloads" --form files=@"$NAME $VERSION.zip"
