@@ -1,7 +1,8 @@
 # python 3.3
 
-from PySide.QtGui import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog, QColor
-from PySide.QtCore import QMargins
+from PySide2.QtWidgets import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog
+from PySide2.QtGui import QColor
+from PySide2.QtCore import QMargins
 
 class ColorButton( QWidget ):
 

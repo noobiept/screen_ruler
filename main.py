@@ -12,8 +12,9 @@
 import sys
 import json
 
-from PySide.QtGui import QApplication, QWidget, QPainter, QGridLayout, QFont, QFontMetrics, QMenu, QAction, QLabel, QColor, QLayout, QCursor, QStyle
-from PySide.QtCore import Qt
+from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction, QLabel, QLayout, QStyle
+from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
+from PySide2.QtCore import Qt
 
 import size_grip, options_window
 

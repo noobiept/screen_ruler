@@ -1,5 +1,5 @@
-from PySide.QtGui import QPushButton
-from PySide.QtCore import Qt
+from PySide2.QtWidgets import QPushButton
+from PySide2.QtCore import Qt
 
 
 class SizeGrip( QPushButton ):

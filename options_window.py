@@ -1,7 +1,7 @@
 # python 3.3
 
-from PySide.QtGui import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout
-from PySide.QtCore import Qt
+from PySide2.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout
+from PySide2.QtCore import Qt
 
 import color_button
 
