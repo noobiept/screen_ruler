@@ -1,5 +1,3 @@
-# python 3.3
-
 from PySide2.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout
 from PySide2.QtCore import Qt
 

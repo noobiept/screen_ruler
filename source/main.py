@@ -1,4 +1,4 @@
-# python 3.3
+#!/usr/bin/env python3
 """
     - when resizing, don't move the ruler when it has reached the minimum width/height
         - happens on the left SizeGrip, since we're moving it when resizing

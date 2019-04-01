@@ -1,5 +1,3 @@
-# python 3.3
-
 from PySide2.QtWidgets import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog
 from PySide2.QtGui import QColor
 from PySide2.QtCore import QMargins
