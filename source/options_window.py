@@ -113,7 +113,17 @@ class OptionsWindow(QWidget):
         currentLength.setAlignment(Qt.AlignCenter)
 
         layout = QGridLayout()
-        layout.setSpacing(5)
+        layout.setSpacing(10)
+
+        # set the same width/height for all the columns/rows
+        columnWidth = 120
+        rowHeight = 25
+        layout.setRowMinimumHeight(0, rowHeight)
+        layout.setRowMinimumHeight(1, rowHeight)
+        layout.setRowMinimumHeight(2, rowHeight)
+        layout.setColumnMinimumWidth(0, columnWidth)
+        layout.setColumnMinimumWidth(1, columnWidth)
+        layout.setColumnMinimumWidth(2, columnWidth)
 
         # first column
         layout.addWidget(pixels, 0, 0)

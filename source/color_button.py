@@ -1,5 +1,5 @@
 from PySide2.QtWidgets import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog
-from PySide2.QtGui import QColor
+from PySide2.QtGui import QColor, QFont
 from PySide2.QtCore import QMargins
 
 
@@ -18,6 +18,11 @@ class ColorButton(QWidget):
         button = QPushButton()
         button.setFixedWidth(50)
         label = QLabel(text)
+
+        # reduce the font-weight of the label
+        font = label.font()
+        font.setWeight(QFont.Thin)
+        label.setFont(font)
 
         layout = QGridLayout()
         layout.setContentsMargins(QMargins(0, 0, 0, 0))
