@@ -18,8 +18,8 @@ pipelines:
 
                 # zip the output
                 - pushd "./source"
-                - zip -r "../$NAME $VERSION.zip" *
+                - zip -r "../$NAME-$VERSION.zip" *
                 - popd
 
                 # upload to the 'downloads' section of the bitbucket project
-                - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/screen_ruler/downloads" --form files=@"$NAME $VERSION.zip"
+                - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/screen_ruler/downloads" --form files=@"$NAME-$VERSION.zip"
