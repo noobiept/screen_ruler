@@ -1,9 +1,0 @@
-{
-    "name": "screen_ruler",
-    "version": "2.0.0",
-    "description": "A screen ruler application.",
-    "scripts": {
-        "formatting:run": "autopep8 --recursive --in-place source/",
-        "formatting:check": "autopep8 --diff --recursive --exit-code source/"
-    }
-}
