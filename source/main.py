@@ -467,11 +467,14 @@ class Ruler(QWidget):
         event.accept()
 
 
-if __name__ == '__main__':
-
+def run():
     app = QApplication(sys.argv)
 
     ruler = Ruler()
     ruler.show()
 
     app.exec_()
+
+
+if __name__ == '__main__':
+    run()
