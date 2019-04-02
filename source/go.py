@@ -1,4 +1,8 @@
-from source.ruler import main
+try:
+    from source.ruler import main
+
+except ImportError:
+    from ruler import main
 
 
 def go():
