@@ -15,8 +15,8 @@ from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
 from PySide2.QtCore import Qt
 
-import size_grip
-import options_window
+from . import size_grip
+from . import options_window
 
 
 class Ruler(QWidget):
@@ -474,7 +474,3 @@ def run():
     ruler.show()
 
     app.exec_()
-
-
-if __name__ == '__main__':
-    run()

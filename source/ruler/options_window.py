@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout
 from PySide2.QtCore import Qt
 
-import color_button
+from . import color_button
 
 
 class OptionsWindow(QWidget):
