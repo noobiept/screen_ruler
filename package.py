@@ -13,7 +13,7 @@ BUILD_NAME = f'{NAME}-{VERSION}.zip'
 
 def build():
     with zipfile.ZipFile(BUILD_NAME, 'w') as zip:
-        for file in glob.glob('source/*.py'):
+        for file in glob.glob('source/**/*.py', recursive=True):
             zip.write(file)
 
         zip.write('setup.py')
