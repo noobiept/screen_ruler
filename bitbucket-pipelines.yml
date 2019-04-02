@@ -16,10 +16,8 @@ pipelines:
                 - NAME=$(cat package.json | jq -er '.name')
                 - VERSION=$(cat package.json | jq -er '.version')
 
-                # zip the output
-                - pushd "./source"
-                - zip -r "../$NAME-$VERSION.zip" *
-                - popd
+                # build the application (will create a .zip file on the root directory)
+                - python build.py
 
                 # upload to the 'downloads' section of the bitbucket project
                 - curl -X POST "https://${BB_AUTH_STRING}@api.bitbucket.org/2.0/repositories/drk4/screen_ruler/downloads" --form files=@"$NAME-$VERSION.zip"
