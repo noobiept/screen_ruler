@@ -23,12 +23,23 @@ In the options window, there's a label that shows the distance from the origin o
 
 Then run from the terminal with the command `screen_ruler`.
 
+# Development
+
 ## Dependencies
 
 -   [Python3](http://python.org)
 -   [PySide2](https://wiki.qt.io/Qt_for_Python)
 
-`pip3 install -r requirements.txt` or `brew install pyside`
+*   `brew install python`
+*   `brew install pyside` or `pip3 install -r requirements.txt`
+
+## Run
+
+`python3 source/go.py`
+
+There's also a helper script (`package.py`) to build, check the formatting, etc.
+
+`python3 package.py --help`
 
 # Keyboard shortcuts
 
