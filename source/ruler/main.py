@@ -179,7 +179,7 @@ class Ruler(QWidget):
             elif (a % 50) == 0:
                 lineLength = large
 
-                # since has different step?.. #HERE
+                # since 'cm' has a different step compared to the other units
                 if units == 'cm':
                     lineLength = medium
 
