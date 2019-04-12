@@ -10,6 +10,7 @@
 
 import sys
 import json
+from pathlib import Path
 
 from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction, QLabel, QLayout, QStyle
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
@@ -17,6 +18,9 @@ from PySide2.QtCore import Qt
 
 from . import size_grip
 from . import options_window
+
+
+CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
 
 
 class Ruler(QWidget):
@@ -392,6 +396,9 @@ class Ruler(QWidget):
         return proportion
 
     def save(self):
+        """
+            Write the current options values to the configuration file.
+        """
         # need to get the individual rgba() from the QColor so that we can serialize it into json
         background = self.options['background_color']
         lines = self.options['lines_color']
@@ -413,39 +420,39 @@ class Ruler(QWidget):
         self.options['ruler_width'] = self.width()
         self.options['ruler_height'] = self.height()
 
-        options = json.dumps(self.options)
+        # make sure the directory exists before trying to create the configuration file
+        if not CONFIG_PATH.parent.exists():
+            CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-        with open('config.txt', 'w', encoding='utf-8') as f:
-            f.write(options)
+        CONFIG_PATH.write_text(json.dumps(self.options), encoding='utf-8')
 
     def load(self):
-
+        """
+            Load the options from the configuration file.
+        """
         try:
-            with open('config.txt', 'r', encoding='utf-8') as f:
-                try:
-                    options = json.load(f)
+            text = CONFIG_PATH.read_text(encoding='utf-8')
+            options = json.loads(text)
 
-                except ValueError:
-                    return
-
-                for key, value in options.items():
-                    self.options[key] = value
-
-                    # deal with the colors (init. the QColor() from)
-                backgroundColor = self.options['background_color']
-                linesColor = self.options['lines_color']
-
-                if isinstance(backgroundColor, dict):
-                    self.options['background_color'] = QColor(
-                        backgroundColor['red'], backgroundColor['green'],
-                        backgroundColor['blue'], backgroundColor['alpha'])
-
-                if isinstance(linesColor, dict):
-                    self.options['lines_color'] = QColor(
-                        linesColor['red'], linesColor['green'],
-                        linesColor['blue'], linesColor['alpha'])
-        except FileNotFoundError:
+        except (FileNotFoundError, ValueError):
             return
+
+        for key, value in options.items():
+            self.options[key] = value
+
+            # deal with the colors (init. the QColor() from)
+        backgroundColor = self.options['background_color']
+        linesColor = self.options['lines_color']
+
+        if isinstance(backgroundColor, dict):
+            self.options['background_color'] = QColor(
+                backgroundColor['red'], backgroundColor['green'],
+                backgroundColor['blue'], backgroundColor['alpha'])
+
+        if isinstance(linesColor, dict):
+            self.options['lines_color'] = QColor(
+                linesColor['red'], linesColor['green'],
+                linesColor['blue'], linesColor['alpha'])
 
     def quit(self):
 

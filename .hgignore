@@ -1,6 +1,5 @@
 syntax: glob
 info.txt
-config.txt
 .DS_Store
 __pycache__
 *.zip
