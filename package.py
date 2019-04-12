@@ -6,8 +6,9 @@ import zipfile
 import argparse
 import subprocess
 
+
 NAME = 'screen_ruler'
-VERSION = '2.0.0'
+VERSION = '2.1.0'
 BUILD_NAME = f'{NAME}-{VERSION}.zip'
 
 
@@ -17,6 +18,7 @@ def build():
             zip.write(file)
 
         zip.write('setup.py')
+        zip.write('package.py')
 
 
 def getBuildName():

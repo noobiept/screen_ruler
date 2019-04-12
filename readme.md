@@ -21,7 +21,7 @@ In the options window, there's a label that shows the distance from the origin o
 
 -   `python3 setup.py install`
 
-Then run from the terminal with the command `screen_ruler`.
+Then run from the terminal with the command `screen_ruler` (or `screen_ruler &` to run without the terminal).
 
 # Development
 
