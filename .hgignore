@@ -1,8 +1,0 @@
-syntax: glob
-info.txt
-.DS_Store
-__pycache__
-*.zip
-build/**
-dist/**
-screen_ruler.egg-info/**
