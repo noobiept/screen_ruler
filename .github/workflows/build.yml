@@ -1,0 +1,25 @@
+name: Screen Ruler
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+
+    - run: pip install -r requirements.txt
+    - run: python package.py checkFormat
+    - run: python package.py build
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: screen_ruler
+        path: build/

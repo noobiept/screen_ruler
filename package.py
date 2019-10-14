@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import sys
 import json
 import glob
@@ -9,11 +10,13 @@ import subprocess
 
 NAME = 'screen_ruler'
 VERSION = '2.1.0'
-BUILD_NAME = f'{NAME}-{VERSION}.zip'
+OUTPUT_PATH = f'build/{NAME}-{VERSION}.zip'
 
 
 def build():
-    with zipfile.ZipFile(BUILD_NAME, 'w') as zip:
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+
+    with zipfile.ZipFile(OUTPUT_PATH, 'w') as zip:
         for file in glob.glob('source/**/*.py', recursive=True):
             zip.write(file)
 
@@ -21,8 +24,8 @@ def build():
         zip.write('package.py')
 
 
-def getBuildName():
-    sys.stdout.write(BUILD_NAME)
+def getOutputPath():
+    sys.stdout.write(OUTPUT_PATH)
 
 
 def checkFormat():
@@ -41,7 +44,7 @@ if __name__ == '__main__':
 
     possibleArgs = {
         'build': build,
-        'getBuildName': getBuildName,
+        'getOutputPath': getOutputPath,
         'checkFormat': checkFormat,
         'runFormat': runFormat
     }
