@@ -2,3 +2,5 @@ info.txt
 .DS_Store
 build/
 __pycache__/
+dist/
+Screen Ruler.spec

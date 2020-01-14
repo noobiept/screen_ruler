@@ -9,7 +9,7 @@ import subprocess
 
 
 NAME = 'screen_ruler'
-VERSION = '2.1.0'
+VERSION = '2.2.0'
 OUTPUT_PATH = f'build/{NAME}-{VERSION}.zip'
 
 
@@ -22,6 +22,12 @@ def build():
 
         zip.write('setup.py')
         zip.write('package.py')
+
+
+def createExecutable():
+    exitCode = subprocess.call(
+        ['pyinstaller', '--name=Screen Ruler', '--windowed', 'source/go.py'])
+    sys.exit(exitCode)
 
 
 def getOutputPath():
@@ -44,6 +50,7 @@ if __name__ == '__main__':
 
     possibleArgs = {
         'build': build,
+        'createExecutable': createExecutable,
         'getOutputPath': getOutputPath,
         'checkFormat': checkFormat,
         'runFormat': runFormat

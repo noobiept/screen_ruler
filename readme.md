@@ -12,16 +12,8 @@ In the options window, there's a label that shows the distance from the origin o
 
 # Installation
 
-## Homebrew
-
 -   `brew tap drk4/homebrew-tap https://bitbucket.org/drk4/homebrew-tap/`
 -   `brew install screen_ruler`
-
-## setup.py
-
--   `python3 setup.py install`
-
-Then run from the terminal with the command `screen_ruler` (or `screen_ruler &` to run without the terminal).
 
 # Development
 
@@ -31,11 +23,15 @@ Then run from the terminal with the command `screen_ruler` (or `screen_ruler &` 
 -   [PySide2](https://wiki.qt.io/Qt_for_Python)
 
 *   `brew install python`
-*   `brew install pyside` or `pip3 install -r requirements.txt`
+*   `pip3 install -r requirements.txt`
 
 ## Run
 
-`python3 source/go.py`
+-   With python.
+    -   `python3 source/go.py`
+-   Alternatively you can create an executable and run that.
+    -   `python3 package.py createExecutable`
+    -   The output is located at: `dist/Screen Ruler.app`
 
 There's also a helper script (`package.py`) to build, check the formatting, etc.
 
