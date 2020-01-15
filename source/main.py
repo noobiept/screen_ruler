@@ -343,7 +343,7 @@ class Ruler(QWidget):
         aboutWindow.setWindowTitle('About')
 
         textElement = QLabel(
-            "For more information, visit: bitbucket.org/drk4/screen_ruler\n\n"
+            "For more information, visit: https://github.com/noobiept/screen_ruler\n\n"
             "You can find there a readme (with the documentation), the source code, and an issues tracker,\n"
             "where you can write suggestions or problems with the application.\n\n"
             "Thanks for using this program.")
