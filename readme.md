@@ -28,7 +28,7 @@ In the options window, there's a label that shows the distance from the origin o
 ## Run
 
 -   With python.
-    -   `python3 source/go.py`
+    -   `python3 source/main.py`
 -   Alternatively you can create an executable and run that.
     -   `python3 package.py createExecutable`
     -   The output is located at: `dist/Screen Ruler.app`

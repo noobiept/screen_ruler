@@ -26,7 +26,7 @@ def build():
 
 def createExecutable():
     exitCode = subprocess.call(
-        ['pyinstaller', '--name=Screen Ruler', '--windowed', 'source/go.py'])
+        ['pyinstaller', '--name=Screen Ruler', '--windowed', 'source/main.py'])
     sys.exit(exitCode)
 
 

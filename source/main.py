@@ -16,8 +16,8 @@ from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
 from PySide2.QtCore import Qt
 
-from . import size_grip
-from . import options_window
+import size_grip
+import options_window
 
 
 CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
@@ -481,3 +481,7 @@ def run():
     ruler.show()
 
     app.exec_()
+
+
+if __name__ == '__main__':
+    run()
