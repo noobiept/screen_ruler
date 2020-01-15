@@ -20,7 +20,6 @@ def build():
         for file in glob.glob('source/**/*.py', recursive=True):
             zip.write(file)
 
-        zip.write('setup.py')
         zip.write('package.py')
 
 
