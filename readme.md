@@ -12,7 +12,7 @@ In the options window, there's a label that shows the distance from the origin o
 
 # Installation
 
--   `brew tap drk4/homebrew-tap https://bitbucket.org/drk4/homebrew-tap/`
+-   `brew tap drk4/homebrew-tap https://github.com/noobiept/homebrew-tap/`
 -   `brew install screen_ruler`
 
 # Development
