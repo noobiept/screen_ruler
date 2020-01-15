@@ -12,8 +12,8 @@ In the options window, there's a label that shows the distance from the origin o
 
 # Installation
 
--   `brew tap drk4/homebrew-tap https://github.com/noobiept/homebrew-tap/`
--   `brew install screen_ruler`
+-   `brew tap noobiept/tap`
+-   `brew cask install screen_ruler`
 
 When you first try to run the application, it will be blocked. You'll have to allow the application in: `System Preferences -> Security & Privacy -> General`.
 
