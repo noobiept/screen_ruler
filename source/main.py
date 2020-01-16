@@ -15,6 +15,7 @@ from pathlib import Path
 from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction, QLabel, QLayout, QStyle
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QGuiApplication
 
 import size_grip
 import options_window
@@ -58,7 +59,7 @@ class Ruler(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setGeometry(
             QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, self.size(),
-                               QApplication.desktop().availableGeometry()))
+                               QGuiApplication.primaryScreen().availableGeometry()))
 
         windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
 
@@ -171,7 +172,7 @@ class Ruler(QWidget):
                 else:
                     text = '{}{}'.format(str(int(a / 100)), units)
 
-                textWidth = fontMetrics.width(text)
+                textWidth = fontMetrics.boundingRect(text).width()
 
                 paint.drawText(position - textWidth / 2,
                                traceLengthLimit / 2 + fontSize / 2, text)
