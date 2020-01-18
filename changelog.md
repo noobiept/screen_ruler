@@ -3,6 +3,7 @@
 ## Added
 
 -   A changelog file of the project releases.
+-   An icon for the application.
 
 # v2.2.0 : 2020-01-15
 

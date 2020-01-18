@@ -3,5 +3,9 @@
     "files.exclude": {
         "dist": true,
         "build": true
-    }
+    },
+    "cSpell.words": [
+        "icns",
+        "pyinstaller"
+    ]
 }
