@@ -19,6 +19,10 @@ When you first try to run the application, it will be blocked. You'll have to al
 
 # Development
 
+## Changelog
+
+[Available here.](changelog.md)
+
 ## Dependencies
 
 -   [Python3](http://python.org)
