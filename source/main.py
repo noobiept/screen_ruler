@@ -42,7 +42,8 @@ class Ruler(QWidget):
             'lines_color': QColor(0, 0, 0, 255),
             'ruler_width': 500,
             'ruler_height': 50,
-            'options_opened': False
+            'options_opened': False,
+            'division_lines': False,
         }
 
         # load the options
@@ -193,6 +194,19 @@ class Ruler(QWidget):
             paint.drawLine(position, 0, position, lineLength)
             paint.drawLine(position, traceLengthLimit, position,
                            traceLengthLimit - lineLength)
+
+        # paint the division lines
+
+        if self.options['division_lines']:
+            paint.setPen(QColor('blue'))
+            halfPoint = rulerLength / 2
+            quarterPoint = rulerLength / 4
+            threeQuarterPoint = 3 / 4 * rulerLength
+
+            paint.drawLine(quarterPoint, 0, quarterPoint, traceLengthLimit)
+            paint.drawLine(halfPoint, 0, halfPoint, traceLengthLimit)
+            paint.drawLine(threeQuarterPoint, 0,
+                           threeQuarterPoint, traceLengthLimit)
 
         paint.restore()
         paint.end()

@@ -10,7 +10,7 @@ class OptionsWindow(QWidget):
 
         self.setWindowTitle('Options')
 
-        # first column (units)
+        # units (cm/px/inch)
         unitsGroup = QButtonGroup(self)
         pixels = QRadioButton('Pixels')
         pixels.unit = 'px'
@@ -45,26 +45,7 @@ class OptionsWindow(QWidget):
 
         unitsGroup.buttonClicked.connect(changeUnits)
 
-        # second column (always above + orientation)
-        alwaysAbove = QCheckBox('Always Above', self)
-        alwaysAbove.setChecked(rulerObject.options['always_above'])
-
-        def alwaysAboveSetting():
-
-            if alwaysAbove.isChecked():
-
-                rulerObject.options['always_above'] = True
-                rulerObject.setWindowFlags(rulerObject.windowFlags()
-                                           | Qt.WindowStaysOnTopHint)
-
-            else:
-                rulerObject.options['always_above'] = False
-                rulerObject.setWindowFlags(
-                    rulerObject.windowFlags() & ~Qt.WindowStaysOnTopHint)
-
-            rulerObject.show()
-
-        alwaysAbove.clicked.connect(alwaysAboveSetting)
+        # orientation (horizontal/vertical)
         horizontalOrientation = rulerObject.options['horizontal_orientation']
 
         orientationGroup = QButtonGroup(self)
@@ -93,7 +74,41 @@ class OptionsWindow(QWidget):
         orientationGroup.addButton(vertical)
         orientationGroup.buttonClicked.connect(changeOrientation)
 
-        # third column (color + current length)
+        # length settings (always above + division lines + current length)
+        alwaysAbove = QCheckBox('Always Above', self)
+        alwaysAbove.setChecked(rulerObject.options['always_above'])
+
+        def alwaysAboveSetting():
+
+            if alwaysAbove.isChecked():
+
+                rulerObject.options['always_above'] = True
+                rulerObject.setWindowFlags(rulerObject.windowFlags()
+                                           | Qt.WindowStaysOnTopHint)
+
+            else:
+                rulerObject.options['always_above'] = False
+                rulerObject.setWindowFlags(
+                    rulerObject.windowFlags() & ~Qt.WindowStaysOnTopHint)
+
+            rulerObject.show()
+
+        alwaysAbove.clicked.connect(alwaysAboveSetting)
+
+        divisionLines = QCheckBox('1/2 1/4 3/4', self)
+        divisionLines.setChecked(rulerObject.options['division_lines'])
+
+        def divisionLinesSetting():
+            rulerObject.options['division_lines'] = divisionLines.isChecked(
+            )
+            rulerObject.update()
+
+        divisionLines.clicked.connect(divisionLinesSetting)
+
+        currentLength = QLabel('0px')
+        currentLength.setAlignment(Qt.AlignCenter)
+
+        # colors settings
         backgroundColor = rulerObject.options['background_color']
         linesColor = rulerObject.options['lines_color']
 
@@ -109,8 +124,6 @@ class OptionsWindow(QWidget):
             self, 'Background', backgroundColor, updateBackgroundColor)
         linesColorElement = color_button.ColorButton(self, 'Lines', linesColor,
                                                      updateLinesColor)
-        currentLength = QLabel('0px')
-        currentLength.setAlignment(Qt.AlignCenter)
 
         layout = QGridLayout()
         layout.setSpacing(10)
@@ -131,14 +144,17 @@ class OptionsWindow(QWidget):
         layout.addWidget(inches, 2, 0)
 
         # second column
-        layout.addWidget(alwaysAbove, 0, 1)
-        layout.addWidget(horizontal, 1, 1)
-        layout.addWidget(vertical, 2, 1)
+        layout.addWidget(horizontal, 0, 1)
+        layout.addWidget(vertical, 1, 1)
 
         # third column
-        layout.addWidget(backgroundColorElement, 0, 2)
-        layout.addWidget(linesColorElement, 1, 2)
-        layout.addWidget(currentLength, 2, 2)
+        layout.addWidget(alwaysAbove, 0, 2)
+        layout.addWidget(divisionLines, 1, 2)
+
+        # fourth column
+        layout.addWidget(backgroundColorElement, 0, 3)
+        layout.addWidget(linesColorElement, 1, 3)
+        layout.addWidget(currentLength, 2, 3)
 
         layout.setSizeConstraint(QLayout.SetFixedSize)
         self.setLayout(layout)
