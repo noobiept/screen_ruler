@@ -28,8 +28,20 @@ When you first try to run the application, it will be blocked. You'll have to al
 -   [Python3](http://python.org)
 -   [PySide2](https://wiki.qt.io/Qt_for_Python)
 
-*   `brew install python`
-*   `pip3 install -r requirements.txt`
+## Installation
+
+### Python
+
+-   `brew install python`
+
+Or
+
+-   `asdf plugin add python`
+-   `asdf install`
+
+### Dependencies
+
+-   `pip3 install -r requirements.txt`
 
 ## Run
 

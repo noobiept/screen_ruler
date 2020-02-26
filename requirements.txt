@@ -1,4 +1,4 @@
 # pip3 install -r requirements.txt
-PySide2 == 5.13.2
-autopep8 == 1.4.4
+PySide2 == 5.14.1
+autopep8 == 1.5
 pyinstaller == 3.6
