@@ -14,7 +14,7 @@ from pathlib import Path
 
 from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction, QLabel, QLayout, QStyle
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
-from PySide2.QtCore import Qt
+from PySide2.QtCore import Qt, QCoreApplication
 from PySide2.QtGui import QGuiApplication
 
 from size_grip import SizeGrip
@@ -50,7 +50,6 @@ class Ruler(QWidget):
         self.load()
 
         # main widget
-
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.constructContextMenu)
 
@@ -77,8 +76,8 @@ class Ruler(QWidget):
 
         self.options_window = OptionsWindow(self)
 
-        if self.options['options_opened']:
-            self.openOptions()
+        if not self.options['options_opened']:
+            self.closeOptions()
 
     def resizeEvent(self, event=None):
         size = self.size()
@@ -200,7 +199,7 @@ class Ruler(QWidget):
         # paint the division lines
 
         if self.options['division_lines']:
-            paint.setPen(QColor('blue'))
+            paint.setPen(self.options['divisions_color'])
             halfPoint = rulerLength / 2
             quarterPoint = rulerLength / 4
             threeQuarterPoint = 3 / 4 * rulerLength
@@ -303,10 +302,12 @@ class Ruler(QWidget):
             selectedItem.data()()
 
     def openOptions(self):
-
         self.options_window.show()
         self.options_window.raise_()
         self.options_window.activateWindow()
+
+    def closeOptions(self):
+        self.options_window.hide()
 
     def rotate(self, mousePosition=None):
 
@@ -428,6 +429,7 @@ class Ruler(QWidget):
 
         self.options['ruler_width'] = self.width()
         self.options['ruler_height'] = self.height()
+        self.options['options_opened'] = self.options_window.isVisible()
 
         # make sure the directory exists before trying to create the configuration file
         if not CONFIG_PATH.parent.exists():
@@ -466,27 +468,16 @@ class Ruler(QWidget):
 
         if isinstance(divisionsColor, dict):
             self.options['divisions_color'] = QColor(
-                linesColor['red'], linesColor['green'],
-                linesColor['blue'], linesColor['alpha'])
+                divisionsColor['red'], divisionsColor['green'],
+                divisionsColor['blue'], divisionsColor['alpha'])
 
     def quit(self):
-
         self.close()
 
     def closeEvent(self, event):
-
-        if self.options_window:
-            self.options['options_opened'] = True
-            self.options_window.close()
-        else:
-            self.options['options_opened'] = False
-
-        if self.about_window:
-            self.about_window.close()
-
         self.save()
-
         event.accept()
+        QApplication.quit()
 
 
 def run():
