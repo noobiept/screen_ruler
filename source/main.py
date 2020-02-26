@@ -17,8 +17,8 @@ from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QGuiApplication
 
-import size_grip
-import options_window
+from size_grip import SizeGrip
+from options_window import OptionsWindow
 
 
 CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
@@ -30,7 +30,6 @@ class Ruler(QWidget):
         super(Ruler, self).__init__()
 
         self.about_window = None
-        self.options_window = None
         self.old_position = None  # is used for dragging of the window
         self.setMinimumWidth(50)
         self.setMinimumHeight(50)
@@ -40,6 +39,7 @@ class Ruler(QWidget):
             'horizontal_orientation': True,
             'background_color': QColor(222, 212, 33, 210),
             'lines_color': QColor(0, 0, 0, 255),
+            'divisions_color': QColor(0, 0, 255, 255),
             'ruler_width': 500,
             'ruler_height': 50,
             'options_opened': False,
@@ -64,8 +64,8 @@ class Ruler(QWidget):
 
         windowFlags = Qt.CustomizeWindowHint | Qt.FramelessWindowHint
 
-        leftResize = size_grip.SizeGrip(self, True)
-        rightResize = size_grip.SizeGrip(self, False)
+        leftResize = SizeGrip(self, True)
+        rightResize = SizeGrip(self, False)
 
         self.left_resize = leftResize
         self.right_resize = rightResize
@@ -74,6 +74,8 @@ class Ruler(QWidget):
             windowFlags = windowFlags | Qt.WindowStaysOnTopHint
         self.setWindowFlags(
             windowFlags)  # Turns off the default window title hints
+
+        self.options_window = OptionsWindow(self)
 
         if self.options['options_opened']:
             self.openOptions()
@@ -302,23 +304,9 @@ class Ruler(QWidget):
 
     def openOptions(self):
 
-        # already opened
-        if self.options_window:
-            self.options_window.raise_()
-            self.options_window.activateWindow()
-            return
-
-        optionsWindow = options_window.OptionsWindow(self)
-
-        # reset the self.options_window variable, to tell when the options window is opened or not
-        def closedOptionsWindow(event):
-            self.options_window = None
-
-            event.accept()
-
-        optionsWindow.closeEvent = closedOptionsWindow
-
-        self.options_window = optionsWindow
+        self.options_window.show()
+        self.options_window.raise_()
+        self.options_window.activateWindow()
 
     def rotate(self, mousePosition=None):
 
@@ -417,6 +405,7 @@ class Ruler(QWidget):
         # need to get the individual rgba() from the QColor so that we can serialize it into json
         background = self.options['background_color']
         lines = self.options['lines_color']
+        divisions = self.options['divisions_color']
 
         self.options['background_color'] = {
             'red': background.red(),
@@ -424,12 +413,17 @@ class Ruler(QWidget):
             'blue': background.blue(),
             'alpha': background.alpha()
         }
-
         self.options['lines_color'] = {
             'red': lines.red(),
             'green': lines.green(),
             'blue': lines.blue(),
             'alpha': lines.alpha()
+        }
+        self.options['divisions_color'] = {
+            'red': divisions.red(),
+            'green': divisions.green(),
+            'blue': divisions.blue(),
+            'alpha': divisions.alpha()
         }
 
         self.options['ruler_width'] = self.width()
@@ -458,6 +452,7 @@ class Ruler(QWidget):
             # deal with the colors (init. the QColor() from)
         backgroundColor = self.options['background_color']
         linesColor = self.options['lines_color']
+        divisionsColor = self.options['divisions_color']
 
         if isinstance(backgroundColor, dict):
             self.options['background_color'] = QColor(
@@ -466,6 +461,11 @@ class Ruler(QWidget):
 
         if isinstance(linesColor, dict):
             self.options['lines_color'] = QColor(
+                linesColor['red'], linesColor['green'],
+                linesColor['blue'], linesColor['alpha'])
+
+        if isinstance(divisionsColor, dict):
+            self.options['divisions_color'] = QColor(
                 linesColor['red'], linesColor['green'],
                 linesColor['blue'], linesColor['alpha'])
 
