@@ -6,6 +6,10 @@
 -   An icon for the application.
 -   An option to show some division lines (1/2, 1/4 and 3/4 of the ruler length).
 
+## Changed
+
+-   Options window now has 2 tabs.
+
 # v2.2.0 : 2020-01-15
 
 ## Added

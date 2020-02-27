@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
-"""
-    - when resizing, don't move the ruler when it has reached the minimum width/height
-        - happens on the left SizeGrip, since we're moving it when resizing
-        - difficult to know when .resize() isn't resizing
-
-    - the proportion is not well calculated for centimeters/inches in windows (you get wrong values for .widthMM() call)
-        - works fine in linux though
-"""
-
 import sys
 import json
 from pathlib import Path
 
 from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction, QLabel, QLayout, QStyle
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
-from PySide2.QtCore import Qt, QCoreApplication
+from PySide2.QtCore import Qt
 from PySide2.QtGui import QGuiApplication
 
 from size_grip import SizeGrip

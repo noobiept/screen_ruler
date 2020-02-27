@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout, QDialog, QTabWidget, QVBoxLayout
+from PySide2.QtWidgets import QWidget, QTabWidget, QVBoxLayout
 from PySide2.QtCore import Qt
 
 from options_colors_tab import OptionsColorsTab

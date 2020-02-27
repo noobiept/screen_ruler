@@ -1,8 +1,6 @@
 from PySide2.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout, QDialog, QTabWidget, QVBoxLayout
 from PySide2.QtCore import Qt
 
-import color_button
-
 
 class OptionsGeneralTab(QWidget):
     def __init__(self, rulerObject, parent=None):
