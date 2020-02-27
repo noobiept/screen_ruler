@@ -1,19 +1,15 @@
 #!/usr/bin/env python3
 import sys
-import json
-from pathlib import Path
 
 from PySide2.QtWidgets import QApplication, QWidget, QMenu, QAction, QStyle
-from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
+from PySide2.QtGui import QPainter, QFont, QFontMetrics, QCursor
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QGuiApplication
 
 from size_grip import SizeGrip
 from options_window import OptionsWindow
 from about_window import AboutWindow
-
-
-CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
+from data import Data
 
 
 class Ruler(QWidget):
@@ -24,28 +20,17 @@ class Ruler(QWidget):
         self.old_position = None  # is used for dragging of the window
         self.setMinimumWidth(50)
         self.setMinimumHeight(50)
-        self.options = {
-            'units': 'px',  # px / cm / inch
-            'always_above': False,
-            'horizontal_orientation': True,
-            'background_color': QColor(222, 212, 33, 210),
-            'lines_color': QColor(0, 0, 0, 255),
-            'divisions_color': QColor(0, 0, 255, 255),
-            'ruler_width': 500,
-            'ruler_height': 50,
-            'options_opened': False,
-            'division_lines': False,
-        }
 
         # load the options
-        self.load()
+        self.data = Data()
 
         # main widget
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.constructContextMenu)
 
         self.setWindowTitle('Screen Ruler')
-        self.resize(self.options['ruler_width'], self.options['ruler_height'])
+        self.resize(self.data.get('ruler_width'),
+                    self.data.get('ruler_height'))
         self.setMouseTracking(True)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setGeometry(
@@ -60,7 +45,7 @@ class Ruler(QWidget):
         self.left_resize = leftResize
         self.right_resize = rightResize
 
-        if self.options['always_above']:
+        if self.data.get('always_above'):
             windowFlags = windowFlags | Qt.WindowStaysOnTopHint
         self.setWindowFlags(
             windowFlags)  # Turns off the default window title hints
@@ -69,7 +54,7 @@ class Ruler(QWidget):
         self.about_window = AboutWindow()
         self.options_window = OptionsWindow(self)
 
-        if self.options['options_opened']:
+        if self.data.get('options_opened'):
             self.openOptions()
 
     def resizeEvent(self, event=None):
@@ -80,7 +65,7 @@ class Ruler(QWidget):
         rightResize = self.right_resize
         length = leftResize.length
 
-        if self.options['horizontal_orientation']:
+        if self.data.get('horizontal_orientation'):
             rightResize.move(width - length, 0)
 
             leftResize.resize(length, height)
@@ -102,11 +87,11 @@ class Ruler(QWidget):
         size = self.size()
         width = size.width()
         height = size.height()
-        units = self.options['units']
+        units = self.data.get('units')
 
         proportion = self.getProportion()
 
-        horizontalOrientation = self.options['horizontal_orientation']
+        horizontalOrientation = self.data.get('horizontal_orientation')
 
         if horizontalOrientation:
 
@@ -140,11 +125,11 @@ class Ruler(QWidget):
         fontMetrics = QFontMetrics(font)
 
         # draw background
-        background = self.options['background_color']
+        background = self.data.get('background_color')
         paint.fillRect(0, 0, rulerLength, traceLengthLimit, background)
 
         # draw the lines
-        paint.setPen(self.options['lines_color'])
+        paint.setPen(self.data.get('lines_color'))
         paint.setFont(font)
 
         # the builtin range() doesn't support floats
@@ -191,8 +176,8 @@ class Ruler(QWidget):
 
         # paint the division lines
 
-        if self.options['division_lines']:
-            paint.setPen(self.options['divisions_color'])
+        if self.data.get('division_lines'):
+            paint.setPen(self.data.get('divisions_color'))
             halfPoint = rulerLength / 2
             quarterPoint = rulerLength / 4
             threeQuarterPoint = 3 / 4 * rulerLength
@@ -231,13 +216,13 @@ class Ruler(QWidget):
         if self.options_window:
             pos = self.pos()
 
-            if self.options['horizontal_orientation']:
+            if self.data.get('horizontal_orientation'):
                 distance = event.globalX() - pos.x()
 
             else:
                 distance = event.globalY() - pos.y()
 
-            unit = self.options['units']
+            unit = self.data.get('units')
 
             if unit != 'px':
                 distance /= 100
@@ -301,8 +286,8 @@ class Ruler(QWidget):
 
     def rotate(self, mousePosition=None):
 
-        self.options['horizontal_orientation'] = not self.options[
-            'horizontal_orientation']
+        self.data.update('horizontal_orientation', not self.data.get(
+            'horizontal_orientation'))
 
         size = self.size()
 
@@ -323,7 +308,7 @@ class Ruler(QWidget):
         # if the options window is opened, update it
         if self.options_window:
             self.options_window.updateOrientation(
-                self.options['horizontal_orientation'])
+                self.data.get('horizontal_orientation'))
 
     def openAbout(self):
         self.about_window.show()
@@ -331,7 +316,7 @@ class Ruler(QWidget):
         self.about_window.activateWindow()
 
     def getProportion(self):
-        units = self.options['units']
+        units = self.data.get('units')
 
         if units == 'cm':
             # 1 mm -> something pixel
@@ -351,83 +336,15 @@ class Ruler(QWidget):
 
         return proportion
 
-    def save(self):
-        """
-            Write the current options values to the configuration file.
-        """
-        # need to get the individual rgba() from the QColor so that we can serialize it into json
-        background = self.options['background_color']
-        lines = self.options['lines_color']
-        divisions = self.options['divisions_color']
-
-        self.options['background_color'] = {
-            'red': background.red(),
-            'green': background.green(),
-            'blue': background.blue(),
-            'alpha': background.alpha()
-        }
-        self.options['lines_color'] = {
-            'red': lines.red(),
-            'green': lines.green(),
-            'blue': lines.blue(),
-            'alpha': lines.alpha()
-        }
-        self.options['divisions_color'] = {
-            'red': divisions.red(),
-            'green': divisions.green(),
-            'blue': divisions.blue(),
-            'alpha': divisions.alpha()
-        }
-
-        self.options['ruler_width'] = self.width()
-        self.options['ruler_height'] = self.height()
-        self.options['options_opened'] = self.options_window.isVisible()
-
-        # make sure the directory exists before trying to create the configuration file
-        if not CONFIG_PATH.parent.exists():
-            CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-
-        CONFIG_PATH.write_text(json.dumps(self.options), encoding='utf-8')
-
-    def load(self):
-        """
-            Load the options from the configuration file.
-        """
-        try:
-            text = CONFIG_PATH.read_text(encoding='utf-8')
-            options = json.loads(text)
-
-        except (FileNotFoundError, ValueError):
-            return
-
-        for key, value in options.items():
-            self.options[key] = value
-
-            # deal with the colors (init. the QColor() from)
-        backgroundColor = self.options['background_color']
-        linesColor = self.options['lines_color']
-        divisionsColor = self.options['divisions_color']
-
-        if isinstance(backgroundColor, dict):
-            self.options['background_color'] = QColor(
-                backgroundColor['red'], backgroundColor['green'],
-                backgroundColor['blue'], backgroundColor['alpha'])
-
-        if isinstance(linesColor, dict):
-            self.options['lines_color'] = QColor(
-                linesColor['red'], linesColor['green'],
-                linesColor['blue'], linesColor['alpha'])
-
-        if isinstance(divisionsColor, dict):
-            self.options['divisions_color'] = QColor(
-                divisionsColor['red'], divisionsColor['green'],
-                divisionsColor['blue'], divisionsColor['alpha'])
-
     def quit(self):
         self.close()
 
     def closeEvent(self, event):
-        self.save()
+        self.data.save({
+            'width': self.width(),
+            'height': self.height(),
+            'optionsOpened': self.options_window.isVisible()
+        })
         event.accept()
         QApplication.quit()
 

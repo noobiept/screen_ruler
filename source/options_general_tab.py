@@ -3,7 +3,7 @@ from PySide2.QtCore import Qt
 
 
 class OptionsGeneralTab(QWidget):
-    def __init__(self, rulerObject, parent=None):
+    def __init__(self, ruler, parent=None):
         QWidget.__init__(self, parent)
 
         # units (cm/px/inch)
@@ -15,7 +15,7 @@ class OptionsGeneralTab(QWidget):
         inches = QRadioButton('Inches')
         inches.unit = 'inch'
 
-        selectedUnit = rulerObject.options['units']
+        selectedUnit = ruler.data.get('units')
 
         if selectedUnit == 'cm':
             centimeters.setChecked(True)
@@ -35,14 +35,14 @@ class OptionsGeneralTab(QWidget):
             newUnit = radioButton.unit
 
             if newUnit != selectedUnit:
-                rulerObject.options['units'] = newUnit
+                ruler.data.update('units', newUnit)
                 selectedUnit = newUnit
-                rulerObject.update()
+                ruler.update()
 
         unitsGroup.buttonClicked.connect(changeUnits)
 
         # orientation (horizontal/vertical)
-        horizontalOrientation = rulerObject.options['horizontal_orientation']
+        horizontalOrientation = ruler.data.get('horizontal_orientation')
 
         orientationGroup = QButtonGroup(self)
         self.horizontal_string = 'Horizontal'
@@ -64,7 +64,7 @@ class OptionsGeneralTab(QWidget):
             if self.selected_orientation != text:
 
                 self.selected_orientation = text
-                rulerObject.rotate()
+                ruler.rotate()
 
         orientationGroup.addButton(horizontal)
         orientationGroup.addButton(vertical)
@@ -72,32 +72,32 @@ class OptionsGeneralTab(QWidget):
 
         # length settings (always above + division lines + current length)
         alwaysAbove = QCheckBox('Always Above', self)
-        alwaysAbove.setChecked(rulerObject.options['always_above'])
+        alwaysAbove.setChecked(ruler.data.get('always_above'))
 
         def alwaysAboveSetting():
 
             if alwaysAbove.isChecked():
 
-                rulerObject.options['always_above'] = True
-                rulerObject.setWindowFlags(rulerObject.windowFlags()
-                                           | Qt.WindowStaysOnTopHint)
+                ruler.data.update('always_above', True)
+                ruler.setWindowFlags(ruler.windowFlags()
+                                     | Qt.WindowStaysOnTopHint)
 
             else:
-                rulerObject.options['always_above'] = False
-                rulerObject.setWindowFlags(
-                    rulerObject.windowFlags() & ~Qt.WindowStaysOnTopHint)
+                ruler.data.update('always_above', False)
+                ruler.setWindowFlags(
+                    ruler.windowFlags() & ~Qt.WindowStaysOnTopHint)
 
-            rulerObject.show()
+            ruler.show()
 
         alwaysAbove.clicked.connect(alwaysAboveSetting)
 
         divisionLines = QCheckBox('1/2 1/4 3/4', self)
-        divisionLines.setChecked(rulerObject.options['division_lines'])
+        divisionLines.setChecked(ruler.data.get('division_lines'))
 
         def divisionLinesSetting():
-            rulerObject.options['division_lines'] = divisionLines.isChecked(
-            )
-            rulerObject.update()
+            ruler.data.update('division_lines', divisionLines.isChecked(
+            ))
+            ruler.update()
 
         divisionLines.clicked.connect(divisionLinesSetting)
 

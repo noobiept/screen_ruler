@@ -8,20 +8,20 @@ class OptionsColorsTab(QWidget):
         QWidget.__init__(self, parent)
 
         # colors settings
-        backgroundColor = ruler.options['background_color']
-        linesColor = ruler.options['lines_color']
-        divisionsColor = ruler.options['divisions_color']
+        backgroundColor = ruler.data.get('background_color')
+        linesColor = ruler.data.get('lines_color')
+        divisionsColor = ruler.data.get('divisions_color')
 
         def updateBackgroundColor(newColor):
-            ruler.options['background_color'] = newColor
+            ruler.data.update('background_color', newColor)
             ruler.update()
 
         def updateLinesColor(newColor):
-            ruler.options['lines_color'] = newColor
+            ruler.data.update('lines_color', newColor)
             ruler.update()
 
         def updateDivisionsColor(newColor):
-            ruler.options['divisions_color'] = newColor
+            ruler.data.update('divisions_color', newColor)
             ruler.update()
 
         backgroundColorElement = ColorButton(
