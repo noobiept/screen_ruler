@@ -21,7 +21,6 @@ class OptionsWindow(QWidget):
         mainLayout.addWidget(self.tabWidget)
         self.setLayout(mainLayout)
         self.setWindowTitle("Options")
-        self.show()
 
     def closeEvent(self, event):
         self.hide()

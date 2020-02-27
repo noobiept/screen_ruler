@@ -3,13 +3,14 @@ import sys
 import json
 from pathlib import Path
 
-from PySide2.QtWidgets import QApplication, QWidget, QGridLayout, QMenu, QAction, QLabel, QLayout, QStyle
+from PySide2.QtWidgets import QApplication, QWidget, QMenu, QAction, QStyle
 from PySide2.QtGui import QPainter, QFont, QFontMetrics, QColor, QCursor
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QGuiApplication
 
 from size_grip import SizeGrip
 from options_window import OptionsWindow
+from about_window import AboutWindow
 
 
 CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
@@ -20,7 +21,6 @@ class Ruler(QWidget):
 
         super(Ruler, self).__init__()
 
-        self.about_window = None
         self.old_position = None  # is used for dragging of the window
         self.setMinimumWidth(50)
         self.setMinimumHeight(50)
@@ -65,10 +65,12 @@ class Ruler(QWidget):
         self.setWindowFlags(
             windowFlags)  # Turns off the default window title hints
 
+        # initialize the secondary windows
+        self.about_window = AboutWindow()
         self.options_window = OptionsWindow(self)
 
-        if not self.options['options_opened']:
-            self.closeOptions()
+        if self.options['options_opened']:
+            self.openOptions()
 
     def resizeEvent(self, event=None):
         size = self.size()
@@ -297,9 +299,6 @@ class Ruler(QWidget):
         self.options_window.raise_()
         self.options_window.activateWindow()
 
-    def closeOptions(self):
-        self.options_window.hide()
-
     def rotate(self, mousePosition=None):
 
         self.options['horizontal_orientation'] = not self.options[
@@ -327,47 +326,9 @@ class Ruler(QWidget):
                 self.options['horizontal_orientation'])
 
     def openAbout(self):
-
-        # already opened
-        if self.about_window:
-            self.about_window.raise_()
-            self.about_window.activateWindow()
-            return
-
-        aboutWindow = QWidget()
-        aboutWindow.setWindowTitle('About')
-
-        textElement = QLabel(
-            "For more information, visit: https://github.com/noobiept/screen_ruler\n\n"
-            "You can find there a readme (with the documentation), the source code, and an issues tracker,\n"
-            "where you can write suggestions or problems with the application.\n\n"
-            "Thanks for using this program.")
-        textElement.setTextInteractionFlags(Qt.TextSelectableByMouse
-                                            | Qt.TextSelectableByKeyboard)
-
-        layout = QGridLayout()
-        layout.addWidget(textElement)
-        layout.setSizeConstraint(QLayout.SetFixedSize)
-
-        aboutWindow.setLayout(layout)
-
-        def keyPress(event):
-
-            if event.key() == Qt.Key_Escape:
-                aboutWindow.close()
-
-        aboutWindow.keyPressEvent = keyPress
-        aboutWindow.show()
-
-        # reset the self.about_window variable, to tell when the about window is opened or not
-        def closedAboutWindow(event):
-            self.about_window = None
-
-            event.accept()
-
-        aboutWindow.closeEvent = closedAboutWindow
-
-        self.about_window = aboutWindow
+        self.about_window.show()
+        self.about_window.raise_()
+        self.about_window.activateWindow()
 
     def getProportion(self):
         units = self.options['units']
