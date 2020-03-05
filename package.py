@@ -9,7 +9,7 @@ import subprocess
 
 
 NAME = 'screen_ruler'
-VERSION = '2.2.0'
+VERSION = '2.3.0'
 OUTPUT_PATH = f'build/{NAME}-{VERSION}.zip'
 
 
@@ -25,7 +25,7 @@ def build():
 
 def createExecutable():
     exitCode = subprocess.call(
-        ['pyinstaller', '--name=Screen Ruler', '--windowed', 'source/main.py'])
+        ['pyinstaller', '--name=Screen Ruler', '--windowed', '--icon=images/icon.icns', 'source/main.py'])
     sys.exit(exitCode)
 
 

@@ -19,13 +19,29 @@ When you first try to run the application, it will be blocked. You'll have to al
 
 # Development
 
+## Changelog
+
+[Available here.](changelog.md)
+
 ## Dependencies
 
 -   [Python3](http://python.org)
 -   [PySide2](https://wiki.qt.io/Qt_for_Python)
 
-*   `brew install python`
-*   `pip3 install -r requirements.txt`
+## Installation
+
+### Python
+
+-   `brew install python`
+
+Or
+
+-   `asdf plugin add python`
+-   `asdf install`
+
+### Dependencies
+
+-   `pip3 install -r requirements.txt`
 
 ## Run
 
@@ -43,8 +59,8 @@ There's also a helper script (`package.py`) to build, check the formatting, etc.
 
 Ruler window:
 
--   alt + ( o )ptions --> open the options window
--   alt + ( r )otate --> rotate the ruler window
+-   alt/option + ( o )ptions --> open the options window
+-   alt/option + ( r )otate --> rotate the ruler window (also rotates on middle click)
 
 Options/about window:
 
