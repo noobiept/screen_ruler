@@ -59,8 +59,8 @@ There's also a helper script (`package.py`) to build, check the formatting, etc.
 
 Ruler window:
 
--   alt + ( o )ptions --> open the options window
--   alt + ( r )otate --> rotate the ruler window (also rotates on middle click)
+-   alt/option + ( o )ptions --> open the options window
+-   alt/option + ( r )otate --> rotate the ruler window (also rotates on middle click)
 
 Options/about window:
 

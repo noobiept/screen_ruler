@@ -91,7 +91,7 @@ class OptionsGeneralTab(QWidget):
 
         alwaysAbove.clicked.connect(alwaysAboveSetting)
 
-        divisionLines = QCheckBox('1/2 1/4 3/4', self)
+        divisionLines = QCheckBox('1/2 1/4 3/4 divisions', self)
         divisionLines.setChecked(ruler.data.get('division_lines'))
 
         def divisionLinesSetting():

@@ -1,5 +1,7 @@
 # Unreleased
 
+# v2.3.0 : 2020-03-05
+
 ## Added
 
 -   A changelog file of the project releases.
