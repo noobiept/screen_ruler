@@ -52,26 +52,24 @@ class Data():
         options = storage.copy()
 
         # deal with the colors (from rgba values to a QColor object)
-        backgroundColor = options['background_color']
-        linesColor = options['lines_color']
-        divisionsColor = options['divisions_color']
-
-        if isinstance(backgroundColor, dict):
-            options['background_color'] = QColor(
-                backgroundColor['red'], backgroundColor['green'],
-                backgroundColor['blue'], backgroundColor['alpha'])
-
-        if isinstance(linesColor, dict):
-            options['lines_color'] = QColor(
-                linesColor['red'], linesColor['green'],
-                linesColor['blue'], linesColor['alpha'])
-
-        if isinstance(divisionsColor, dict):
-            options['divisions_color'] = QColor(
-                divisionsColor['red'], divisionsColor['green'],
-                divisionsColor['blue'], divisionsColor['alpha'])
+        Data.setColorIfValid(storage, options, 'background_color')
+        Data.setColorIfValid(storage, options, 'lines_color')
+        Data.setColorIfValid(storage, options, 'divisions_color')
 
         return options
+
+    @staticmethod
+    def setColorIfValid(storage, options, key):
+        if key in storage:
+            color = storage.get(key)
+
+            if isinstance(color, dict):
+                if set(('red', 'green', 'blue', 'alpha')).issubset(color):
+                    options[key] = QColor(
+                        color['red'],
+                        color['green'],
+                        color['blue'],
+                        color['alpha'])
 
     def __init__(self):
         self.options = {
@@ -105,7 +103,7 @@ class Data():
         except (FileNotFoundError, ValueError):
             return
 
-        self.options = Data.storageToOptions(storage)
+        self.options.update(Data.storageToOptions(storage))
 
     def save(self, currentState):
         """
