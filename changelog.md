@@ -1,5 +1,11 @@
 # Unreleased
 
+# v2.3.1 : 2020-03-11
+
+## Changed
+
+-   Fix crash issue when trying to load previous storage format.
+
 # v2.3.0 : 2020-03-05
 
 ## Added

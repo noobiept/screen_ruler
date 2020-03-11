@@ -6,6 +6,45 @@ from PySide2.QtGui import QColor
 CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
 
 
+def isValidUnitValue(value):
+    return value in ('px', 'cm', 'inch')
+
+
+def isValidColorValue(value):
+    return 0 <= value <= 255
+
+
+def setIfValid(storage, options, key, type, validate=None):
+    option = storage.get(key)
+
+    if isinstance(option, type):
+        if validate and not validate(option):
+            return
+
+        options[key] = option
+
+
+def setColorIfValid(storage, options, key):
+    color = storage.get(key)
+
+    if isinstance(color, dict):
+        if set(('red', 'green', 'blue', 'alpha')).issubset(color):
+            red = color['red']
+            green = color['green']
+            blue = color['blue']
+            alpha = color['alpha']
+
+            if (
+                not isValidColorValue(red) or
+                not isValidColorValue(green) or
+                not isValidColorValue(blue) or
+                not isValidColorValue(alpha)
+            ):
+                return
+
+            options[key] = QColor(red, green, blue, alpha)
+
+
 class Data():
     @staticmethod
     def optionsToStorage(options, currentState):
@@ -49,27 +88,22 @@ class Data():
         """
             Convert from the 'storage' structure to the 'options' data structure.
         """
-        options = storage.copy()
+        options = {}
+
+        setIfValid(storage, options, 'units', str, isValidUnitValue)
+        setIfValid(storage, options, 'always_above', bool)
+        setIfValid(storage, options, 'horizontal_orientation', bool)
+        setIfValid(storage, options, 'ruler_width', int)
+        setIfValid(storage, options, 'ruler_height', int)
+        setIfValid(storage, options, 'options_opened', bool)
+        setIfValid(storage, options, 'division_lines', bool)
 
         # deal with the colors (from rgba values to a QColor object)
-        Data.setColorIfValid(storage, options, 'background_color')
-        Data.setColorIfValid(storage, options, 'lines_color')
-        Data.setColorIfValid(storage, options, 'divisions_color')
+        setColorIfValid(storage, options, 'background_color')
+        setColorIfValid(storage, options, 'lines_color')
+        setColorIfValid(storage, options, 'divisions_color')
 
         return options
-
-    @staticmethod
-    def setColorIfValid(storage, options, key):
-        if key in storage:
-            color = storage.get(key)
-
-            if isinstance(color, dict):
-                if set(('red', 'green', 'blue', 'alpha')).issubset(color):
-                    options[key] = QColor(
-                        color['red'],
-                        color['green'],
-                        color['blue'],
-                        color['alpha'])
 
     def __init__(self):
         self.options = {
