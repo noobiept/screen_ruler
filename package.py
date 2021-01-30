@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import sys
-import json
 import glob
 import zipfile
 import argparse
@@ -16,11 +15,11 @@ OUTPUT_PATH = f'build/{NAME}-{VERSION}.zip'
 def build():
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
 
-    with zipfile.ZipFile(OUTPUT_PATH, 'w') as zip:
+    with zipfile.ZipFile(OUTPUT_PATH, 'w') as zipF:
         for file in glob.glob('source/**/*.py', recursive=True):
-            zip.write(file)
+            zipF.write(file)
 
-        zip.write('package.py')
+        zipF.write('package.py')
 
 
 def createExecutable():

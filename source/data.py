@@ -14,10 +14,10 @@ def isValidColorValue(value):
     return 0 <= value <= 255
 
 
-def setIfValid(storage, options, key, type, validate=None):
+def setIfValid(storage, options, key, valType, validate=None):
     option = storage.get(key)
 
-    if isinstance(option, type):
+    if isinstance(option, valType):
         if validate and not validate(option):
             return
 
@@ -45,7 +45,7 @@ def setColorIfValid(storage, options, key):
             options[key] = QColor(red, green, blue, alpha)
 
 
-class Data():
+class Data:
     @staticmethod
     def optionsToStorage(options, currentState):
         """

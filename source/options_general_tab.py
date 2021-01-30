@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout, QDialog, QTabWidget, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QButtonGroup, QRadioButton, QCheckBox, QLabel, QGridLayout, QLayout
 from PySide6.QtCore import Qt
 
 

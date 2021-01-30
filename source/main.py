@@ -133,10 +133,10 @@ class Ruler(QWidget):
         paint.setFont(font)
 
         # the builtin range() doesn't support floats
-        def float_range(current, end, step):
+        def float_range(current, end, rangeStep):
             while current < end:
                 yield current
-                current += step
+                current += rangeStep
 
             # we skip 0 and start in the first step, since there's no point in drawing the first line/text (it would appear cut off, since we're at the limit)
 
