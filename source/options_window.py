@@ -1,5 +1,5 @@
-from PySide2.QtWidgets import QWidget, QTabWidget, QVBoxLayout
-from PySide2.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QTabWidget, QVBoxLayout
+from PySide6.QtCore import Qt
 
 from options_colors_tab import OptionsColorsTab
 from options_general_tab import OptionsGeneralTab

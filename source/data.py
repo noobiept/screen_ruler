@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from PySide2.QtGui import QColor
+from PySide6.QtGui import QColor
 
 CONFIG_PATH = Path.home() / '.config' / 'screen_ruler' / 'config.json'
 

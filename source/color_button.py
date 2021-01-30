@@ -1,6 +1,6 @@
-from PySide2.QtWidgets import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog
-from PySide2.QtGui import QColor, QFont
-from PySide2.QtCore import QMargins
+from PySide6.QtWidgets import QPushButton, QWidget, QLabel, QGridLayout, QColorDialog
+from PySide6.QtGui import QColor, QFont
+from PySide6.QtCore import QMargins
 
 
 class ColorButton(QWidget):

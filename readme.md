@@ -26,7 +26,7 @@ When you first try to run the application, it will be blocked. You'll have to al
 ## Dependencies
 
 -   [Python3](http://python.org)
--   [PySide2](https://wiki.qt.io/Qt_for_Python)
+-   [PySide6](https://wiki.qt.io/Qt_for_Python)
 
 ## Installation
 

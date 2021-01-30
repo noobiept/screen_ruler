@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import sys
 
-from PySide2.QtWidgets import QApplication, QWidget, QMenu, QAction, QStyle
-from PySide2.QtGui import QPainter, QFont, QFontMetrics, QCursor
-from PySide2.QtCore import Qt
-from PySide2.QtGui import QGuiApplication
+from PySide6.QtWidgets import QApplication, QWidget, QMenu, QStyle
+from PySide6.QtGui import QPainter, QFont, QFontMetrics, QCursor, QAction
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QGuiApplication
 
 from size_grip import SizeGrip
 from options_window import OptionsWindow
@@ -196,7 +196,7 @@ class Ruler(QWidget):
 
         button = event.button()
 
-        if button == Qt.MidButton:
+        if button == Qt.MiddleButton:
             self.rotate(QCursor.pos())
 
     def mouseMoveEvent(self, event, fromSizeGrip=False):

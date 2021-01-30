@@ -1,4 +1,4 @@
-from PySide2.QtWidgets import QWidget, QGridLayout, QLayout
+from PySide6.QtWidgets import QWidget, QGridLayout, QLayout
 
 from color_button import ColorButton
 
